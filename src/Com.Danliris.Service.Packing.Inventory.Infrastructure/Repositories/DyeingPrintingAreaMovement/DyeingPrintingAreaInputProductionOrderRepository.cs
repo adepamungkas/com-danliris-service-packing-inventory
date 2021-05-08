@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Com.Moonlay.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Utilities;
 
 namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.DyeingPrintingAreaMovement
 {
@@ -88,6 +89,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
             modelToUpdate.SetPackingInstruction(model.PackingInstruction, _identityProvider.Username, UserAgent);
             modelToUpdate.SetDeliveryOrderSales(model.DeliveryOrderSalesId, model.DeliveryOrderSalesNo, _identityProvider.Username, UserAgent);
             modelToUpdate.SetBalanceRemains(model.BalanceRemains, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterial(model.MaterialId, model.MaterialName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterialConstruction(model.MaterialConstructionId, model.MaterialConstructionName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterialWidth(model.MaterialWidth, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMachine(model.Machine, _identityProvider.Username, UserAgent);
             return _dbContext.SaveChangesAsync();
         }
 
@@ -115,7 +120,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
         {
             var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
 
-            if(modelToUpdate != null)
+            if (modelToUpdate != null)
             {
                 var newBalance = modelToUpdate.BalanceRemains - balance;
                 modelToUpdate.SetBalanceRemains(newBalance, _identityProvider.Username, UserAgent);
@@ -128,15 +133,115 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
                     modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
                 }
             }
-            
+
             return _dbContext.SaveChangesAsync();
         }
 
-        public Task<int> UpdateFromNextAreaInputAsync(int id, double balance)
+        public Task<int> UpdateFromOutputIMAsync(int id, double balance)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                var newBalance = modelToUpdate.BalanceRemains - balance;
+                modelToUpdate.SetBalanceRemains(newBalance, _identityProvider.Username, UserAgent);
+                if (newBalance == 0)
+                {
+                    modelToUpdate.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                }
+                else
+                {
+                    modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                }
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateBalanceAndRemainsAsync(int id, double balance)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                var newBalanceRemains = modelToUpdate.BalanceRemains - balance;
+                var newBalance = modelToUpdate.Balance - balance;
+                modelToUpdate.SetBalanceRemains(newBalanceRemains, _identityProvider.Username, UserAgent);
+                modelToUpdate.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+                if (newBalanceRemains == 0)
+                {
+                    modelToUpdate.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                }
+                else
+                {
+                    modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                }
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateBalanceAndRemainsWithFlagAsync(int id, double balance)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                var newBalanceRemains = modelToUpdate.BalanceRemains - balance;
+                var newBalance = modelToUpdate.Balance - balance;
+                modelToUpdate.SetBalanceRemains(newBalanceRemains, _identityProvider.Username, UserAgent);
+                modelToUpdate.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+                if (newBalanceRemains <= 0)
+                {
+                    modelToUpdate.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                }
+                else
+                {
+                    modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                }
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateBalanceAndRemainsWithFlagAsync(int id, double balance, decimal qtyPacking)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                var newBalanceRemains = modelToUpdate.BalanceRemains - balance;
+                var newBalance = modelToUpdate.Balance - balance;
+                modelToUpdate.SetBalanceRemains(newBalanceRemains, _identityProvider.Username, UserAgent);
+                modelToUpdate.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+
+                var newQtyPacking = modelToUpdate.PackagingQty - qtyPacking;
+                modelToUpdate.SetPackagingQty(newQtyPacking, _identityProvider.Username, UserAgent);
+
+                if (newBalanceRemains <= 0)
+                {
+                    modelToUpdate.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                }
+                else
+                {
+                    modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                }
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateFromNextAreaInputAsync(int id, double balance, decimal qtyPacking)
         {
             var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
             var newBalance = modelToUpdate.Balance - balance;
             modelToUpdate.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+
+            if (modelToUpdate.Area == DyeingPrintingArea.GUDANGJADI || modelToUpdate.Area == DyeingPrintingArea.SHIPPING || modelToUpdate.Area == DyeingPrintingArea.TRANSIT)
+            {
+                var newQtyPacking = modelToUpdate.PackagingQty - qtyPacking;
+                modelToUpdate.SetPackagingQty(newQtyPacking, _identityProvider.Username, UserAgent);
+            }
 
             return _dbContext.SaveChangesAsync();
         }
@@ -162,6 +267,127 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
             {
                 modelToUpdate.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
             }
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Tuple<int, List<PackingData>>> UpdatePackingFromOut(string destinationArea, string productionOrderNo, string grade, double balance)
+        {
+            var data = _dbSet.Where(s => s.Area == DyeingPrintingArea.PACKING && s.ProductionOrderNo == productionOrderNo && s.Grade == grade &&
+                s.BalanceRemains > 0).Include(s => s.DyeingPrintingAreaInput).OrderBy(s => s.DyeingPrintingAreaInput.Date).ToList();
+
+            int index = 0;
+            var packingData = new List<PackingData>();
+            while (balance > 0)
+            {
+                var item = data.ElementAtOrDefault(index);
+
+                if (item != null)
+                {
+                    var previousPacking = new PackingData()
+                    {
+                        Id = item.Id
+                    };
+
+                    double diffBalance = 0;
+                    var tempBalanceRemains = item.BalanceRemains - balance;
+                    var tempBalance = item.Balance - balance;
+
+                    if (tempBalanceRemains < 0)
+                    {
+                        balance = tempBalanceRemains * -1;
+                        diffBalance = item.BalanceRemains;
+                        item.SetBalanceRemains(0, _identityProvider.Username, UserAgent);
+                        if (destinationArea == DyeingPrintingArea.INSPECTIONMATERIAL)
+                        {
+                            item.SetBalance(0, _identityProvider.Username, UserAgent);
+                        }
+                        item.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                    }
+                    else
+                    {
+                        diffBalance = balance;
+                        item.SetBalanceRemains(tempBalanceRemains, _identityProvider.Username, UserAgent);
+                        if (destinationArea == DyeingPrintingArea.INSPECTIONMATERIAL)
+                        {
+                            item.SetBalance(tempBalance, _identityProvider.Username, UserAgent);
+                        }
+                        if (tempBalanceRemains == 0)
+                        {
+                            item.SetHasOutputDocument(true, _identityProvider.Username, UserAgent);
+                        }
+                        else
+                        {
+                            item.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                        }
+                        balance = 0;
+
+                    }
+
+                    previousPacking.Balance = diffBalance;
+
+                    packingData.Add(previousPacking);
+
+                    index++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            return new Tuple<int, List<PackingData>>(result, packingData);
+        }
+
+        public Task<int> RestorePacking(string destinationArea, List<PackingData> packingData)
+        {
+            foreach (var item in packingData)
+            {
+                var model = _dbSet.FirstOrDefault(s => s.Id == item.Id);
+                if (model != null)
+                {
+                    var newBalanceRemains = model.BalanceRemains + item.Balance;
+                    var newBalance = model.Balance + item.Balance;
+
+
+                    model.SetBalanceRemains(newBalanceRemains, _identityProvider.Username, UserAgent);
+                    if (destinationArea == DyeingPrintingArea.INSPECTIONMATERIAL)
+                    {
+                        model.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+                    }
+                    model.SetHasOutputDocument(false, _identityProvider.Username, UserAgent);
+                }
+
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateFromNextAreaInputPackingAsync(List<PackingData> packingData)
+        {
+            foreach (var item in packingData)
+            {
+                var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == item.Id);
+                if (modelToUpdate != null)
+                {
+                    var newBalance = modelToUpdate.Balance - item.Balance;
+                    modelToUpdate.SetBalance(newBalance, _identityProvider.Username, UserAgent);
+                }
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateDateOutsync(int id, DateTimeOffset dateOut)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(entity => entity.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                modelToUpdate.SetDateOut(dateOut, _identityProvider.Username, UserAgent);
+            }
+
             return _dbContext.SaveChangesAsync();
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.CommonViewModelObjectProperties;
 using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public string invoiceNo { get; set; }
 
         public DateTimeOffset? date { get; set; }
-        public string name { get; set; }
+        public EMKL emkl { get; set; }
+        public string destination { get; set; }
         public string address { get; set; }
+        public string pic { get; set; }
         public string attn { get; set; }
         public string phone { get; set; }
         public DateTimeOffset? bookingDate { get; set; }
@@ -49,9 +52,19 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Tanggal tidak boleh kosong", new List<string> { "date" });
             }
 
-            if (string.IsNullOrEmpty(name))
+            if (emkl == null || emkl.Id == 0)
             {
-                yield return new ValidationResult("Nama tidak boleh kosong", new List<string> { "name" });
+                yield return new ValidationResult("EMKL tidak boleh kosong", new List<string> { "emkl" });
+            }
+
+            if (string.IsNullOrEmpty(destination))
+            {
+                yield return new ValidationResult("Tujuan tidak boleh kosong", new List<string> { "destination" });
+            }
+
+            if (string.IsNullOrEmpty(pic))
+            {
+                yield return new ValidationResult("PIC tidak boleh kosong", new List<string> { "pic" });
             }
 
             if (string.IsNullOrEmpty(address))
@@ -99,10 +112,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Driver tidak boleh kosong", new List<string> { "driver" });
             }
 
-            if (string.IsNullOrEmpty(containerNo))
-            {
-                yield return new ValidationResult("Container No tidak boleh kosong", new List<string> { "containerNo" });
-            }
+            //if (string.IsNullOrEmpty(containerNo))
+            //{
+            //    yield return new ValidationResult("Container No tidak boleh kosong", new List<string> { "containerNo" });
+            //}
 
             if (string.IsNullOrEmpty(freight))
             {

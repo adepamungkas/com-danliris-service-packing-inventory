@@ -10,6 +10,19 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
     {
         public long ProductionOrderId { get; private set; }
         public string ProductionOrderNo { get; private set; }
+        public int MaterialId { get; private set; }
+        public string MaterialName { get; private set; }
+        public int MaterialConstructionId { get; private set; }
+        public string MaterialConstructionName { get; private set; }
+        public string MaterialWidth { get; private set; }
+        public string FinishWidth { get; private set; }
+
+        public int ProcessTypeId { get; private set; }
+        public string ProcessTypeName { get; private set; }
+
+        public int YarnMaterialId { get; private set; }
+        public string YarnMaterialName { get; private set; }
+
         public string CartNo { get; private set; }
         public int BuyerId { get; private set; }
         public string Buyer { get; private set; }
@@ -29,6 +42,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
         public string PackagingType { get; private set; }
         public decimal PackagingQty { get; private set; }
         public string PackagingUnit { get; private set; }
+        public double PackagingLength { get; private set; }
 
         public double AvalALength { get; private set; }
         public double AvalBLength { get; private set; }
@@ -40,11 +54,16 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
         public string AvalType { get; private set; }
         public string AvalCartNo { get; private set; }
         public double AvalQuantityKg { get; private set; }
+        public string Machine { get; private set; }
+
+        public string ProductionMachine { get; set; }
 
         public bool HasNextAreaDocument { get; private set; }
         public string Area { get; private set; }
         public string DestinationArea { get; private set; }
         public string Description { get; set; }
+
+        public string NextAreaInputStatus { get; private set; }
 
 
         public string DeliveryNote { get; private set; }
@@ -54,26 +73,94 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
         public string ShippingRemark { get; private set; }
         public double Weight { get; private set; }
 
+        public string PrevSppInJson { get; set; }
+
+        public string AdjDocumentNo { get; set; }
+        public string DestinationBuyerName { get; set; }
+        public string InventoryType { get; set; }
+
+        #region Product SKU Packing
+
+        public int ProductSKUId { get; private set; }
+
+        public int FabricSKUId { get; private set; }
+
+        public string ProductSKUCode { get; private set; }
+
+        public int ProductPackingId { get; private set; }
+
+        public int FabricPackingId { get; private set; }
+
+        public string ProductPackingCode { get; private set; }
+
+        public bool HasPrintingProductSKU { get; private set; }
+
+        public bool HasPrintingProductPacking { get; private set; }
+
+        #endregion
+
 
         /// <summary>
         /// ID SPP Input
         /// </summary>
         public int DyeingPrintingAreaInputProductionOrderId { get; set; }
 
+
         //public ICollection<DyeingPrintingAreaOutputAvalItemModel> DyeingPrintingAreaOutputAvalItems { get; private set; }
 
 
         public int DyeingPrintingAreaOutputId { get; set; }
         public DyeingPrintingAreaOutputModel DyeingPrintingAreaOutput { get; set; }
+        public DateTimeOffset DateIn { get; private set; }
+        public DateTimeOffset DateOut { get; private set; }
 
         public DyeingPrintingAreaOutputProductionOrderModel()
         {
             //DyeingPrintingAreaOutputAvalItems = new HashSet<DyeingPrintingAreaOutputAvalItemModel>();
         }
 
-        //IM
+        /// <summary>
+        /// Area IM
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="dyeingPrintingAreaInputProductionOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="avalType"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="machine"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+       
         public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string productionOrderType, double productionOrderQuantity, string packingInstruction, string cartNo, string buyer, string construction,
-            string unit, string color, string motif, string uomUnit, string remark, string grade, string status, double balance, int dyeingPrintingAreaInputProductionOrderId, int buyerId, string avalType) : this()
+                    string unit, string color, string motif, string uomUnit, string remark, string grade, string status, double balance, int dyeingPrintingAreaInputProductionOrderId, int buyerId, string avalType,
+                    int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, string machine, string productionMachine, string adjDocumentNo,
+                    int processTypeId, string processTypeName, int yarnMaterialId, string yarnMaterialName, int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, string finishWidth,DateTimeOffset dateIn, DateTimeOffset dateOut) : this()
+                   
         {
             ProductionOrderId = productionOrderId;
             ProductionOrderNo = productionOrderNo;
@@ -101,11 +188,315 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             BuyerId = buyerId;
 
             AvalType = avalType;
+
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+
+            Machine = machine;
+            ProductionMachine = productionMachine;
+
+            AdjDocumentNo = adjDocumentNo;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            FinishWidth = finishWidth;
+            DateIn = dateIn;
+            DateOut = dateOut;
         }
 
-        //Transit
+        /// <summary>
+        /// Area Trasnit
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="dyeingPrintingAreaInputProductonOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="qtyPacking"></param>
+        /// <param name="packingType"></param>
+        /// <param name="packingUnit"></param>
+        /// <param name="deliveryOrderSalesId"></param>
+        /// <param name="deliveryOrderSalesNo"></param>
+        /// <param name="avalType"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        /// <param name="productSKUId"></param>
+        /// <param name="fabricSKUId"></param>
+        /// <param name="productSKUCode"></param>
+        /// <param name="hasPrintingProductSKU"></param>
+        /// <param name="productPackingId"></param>
+        /// <param name="fabricPackingId"></param>
+        /// <param name="productPackingCode"></param>
+        /// <param name="hasPrintingProductPacking"></param>
         public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string productionOrderType, double productionOrderQuantity, string packingInstruction, string cartNo, string buyer, string construction,
-            string unit, string color, string motif, string uomUnit, string remark, string grade, string status, double balance, int dyeingPrintingAreaInputProductonOrderId, int buyerId) : this()
+            string unit, string color, string motif, string uomUnit, string remark, string productionMachine, string grade, string status, double balance, int dyeingPrintingAreaInputProductonOrderId, int buyerId,
+            int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, string adjDocumentNo, decimal qtyPacking, string packingType,
+            string packingUnit, long deliveryOrderSalesId, string deliveryOrderSalesNo, string avalType, int processTypeId, string processTypeName, int yarnMaterialId, string yarnMaterialName,
+            int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth, DateTimeOffset dateIn, DateTimeOffset dateOut) : this()
+            
+        {
+            ProductionOrderId = productionOrderId;
+            ProductionOrderNo = productionOrderNo;
+            ProductionOrderOrderQuantity = productionOrderQuantity;
+            CartNo = cartNo;
+            Buyer = buyer;
+            Construction = construction;
+            Unit = unit;
+            Color = color;
+            Motif = motif;
+            UomUnit = uomUnit;
+            Balance = balance;
+            Remark = remark;
+            ProductionMachine = productionMachine;
+            Status = status;
+            Grade = grade;
+            ProductionOrderType = productionOrderType;
+            PackingInstruction = packingInstruction;
+
+            Area = area;
+            DestinationArea = destinationArea;
+            HasNextAreaDocument = hasNextAreaDocument;
+
+            DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductonOrderId;
+
+            BuyerId = buyerId;
+
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+            AdjDocumentNo = adjDocumentNo;
+
+            PackagingQty = qtyPacking;
+            PackagingType = packingType;
+            PackagingUnit = packingUnit;
+
+            DeliveryOrderSalesId = deliveryOrderSalesId;
+            DeliveryOrderSalesNo = deliveryOrderSalesNo;
+
+            AvalType = avalType;
+            
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
+        }
+
+
+
+        /// <summary>
+        /// Area Trasnit
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="dyeingPrintingAreaInputProductonOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="qtyPacking"></param>
+        /// <param name="packingType"></param>
+        /// <param name="packingUnit"></param>
+        /// <param name="deliveryOrderSalesId"></param>
+        /// <param name="deliveryOrderSalesNo"></param>
+        /// <param name="avalType"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        /// <param name="productSKUId"></param>
+        /// <param name="fabricSKUId"></param>
+        /// <param name="productSKUCode"></param>
+        /// <param name="hasPrintingProductSKU"></param>
+        /// <param name="productPackingId"></param>
+        /// <param name="fabricPackingId"></param>
+        /// <param name="productPackingCode"></param>
+        /// <param name="hasPrintingProductPacking"></param>
+        ///  <param name="nextAreaInputStatus"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string productionOrderType, double productionOrderQuantity, string packingInstruction, string cartNo, string buyer, string construction,
+            string unit, string color, string motif, string uomUnit, string remark, string productionMachine, string grade, string status, double balance, int dyeingPrintingAreaInputProductonOrderId, int buyerId,
+            int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, string adjDocumentNo, decimal qtyPacking, string packingType,
+            string packingUnit, long deliveryOrderSalesId, string deliveryOrderSalesNo, string avalType, int processTypeId, string processTypeName, int yarnMaterialId, string yarnMaterialName,
+            int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth, DateTimeOffset dateIn, DateTimeOffset dateOut, string nextAreaInputStatus) : this()
+
+        {
+            ProductionOrderId = productionOrderId;
+            ProductionOrderNo = productionOrderNo;
+            ProductionOrderOrderQuantity = productionOrderQuantity;
+            CartNo = cartNo;
+            Buyer = buyer;
+            Construction = construction;
+            Unit = unit;
+            Color = color;
+            Motif = motif;
+            UomUnit = uomUnit;
+            Balance = balance;
+            Remark = remark;
+            ProductionMachine = productionMachine;
+            Status = status;
+            Grade = grade;
+            ProductionOrderType = productionOrderType;
+            PackingInstruction = packingInstruction;
+
+            Area = area;
+            DestinationArea = destinationArea;
+            HasNextAreaDocument = hasNextAreaDocument;
+
+            DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductonOrderId;
+
+            BuyerId = buyerId;
+
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+            AdjDocumentNo = adjDocumentNo;
+
+            PackagingQty = qtyPacking;
+            PackagingType = packingType;
+            PackagingUnit = packingUnit;
+
+            DeliveryOrderSalesId = deliveryOrderSalesId;
+            DeliveryOrderSalesNo = deliveryOrderSalesNo;
+
+            AvalType = avalType;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
+            NextAreaInputStatus = nextAreaInputStatus;
+        }
+
+        /// <summary>
+        /// Area Packing
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="dyeingPrintingAreaInputProductonOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="packagingType"></param>
+        /// <param name="packagingQty"></param>
+        /// <param name="packagingUnit"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string productionOrderType, double productionOrderQuantity, string packingInstruction, string cartNo, string buyer, string construction,
+            string unit, string color, string motif, string uomUnit, string remark, string grade, string status, double balance, int dyeingPrintingAreaInputProductonOrderId, int buyerId,
+            int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, string adjDocumentNo, string packagingType, decimal packagingQty,
+            string packagingUnit, int processTypeId, string processTypeName, int yarnMaterialId, string yarnMaterialName,
+            int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth,DateTimeOffset dateIn, DateTimeOffset dateOut) : this()
         {
             ProductionOrderId = productionOrderId;
             ProductionOrderNo = productionOrderNo;
@@ -131,11 +522,88 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductonOrderId;
 
             BuyerId = buyerId;
+
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+            AdjDocumentNo = adjDocumentNo;
+            PackagingQty = packagingQty;
+            PackagingType = packagingType;
+            PackagingUnit = packagingUnit;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
         }
 
-        //Shipping
+        /// <summary>
+        /// Area Shipping
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="deliveryOrderSalesId"></param>
+        /// <param name="deliveryOrderSalesNo"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="grade"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="deliveryNote"></param>
+        /// <param name="balance"></param>
+        /// <param name="dyeingPrintingAreaInputProductonOrderId"></param>
+        /// <param name="packingUnit"></param>
+        /// <param name="packingType"></param>
+        /// <param name="qtyPacking"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="hasSalesInvoice"></param>
+        /// <param name="shippingGrade"></param>
+        /// <param name="shippingRemark"></param>
+        /// <param name="weight"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="remark"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        /// <param name="detinationBuyerName"></param>
+        /// <param name="InventoryType"></param>
         public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long deliveryOrderSalesId, string deliveryOrderSalesNo, long productionOrderId, string productionOrderNo, string productionOrderType, double productionOrderQuantity, string buyer, string construction,
-           string unit, string color, string motif, string grade, string uomUnit, string deliveryNote, double balance, int dyeingPrintingAreaInputProductonOrderId, string packingUnit, string packingType, decimal qtyPacking, int buyerId, bool hasSalesInvoice, string shippingGrade, string shippingRemark, double weight) : this()
+            string unit, string color, string motif, string grade, string uomUnit, string deliveryNote, double balance, int dyeingPrintingAreaInputProductonOrderId, string packingUnit, string packingType, decimal qtyPacking, int buyerId, bool hasSalesInvoice, string shippingGrade, string shippingRemark, double weight,
+            int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, string cartNo, string remark, string adjDocumentNo,
+            int processTypeId, string processTypeName, int yarnMaterialId, string yarnMaterialName,
+            int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth, DateTimeOffset dateIn, DateTimeOffset dateOut, string destinationBuyerName, string inventoryType) : this()
+           
         {
             ProductionOrderId = productionOrderId;
             ProductionOrderNo = productionOrderNo;
@@ -168,159 +636,40 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             ShippingGrade = shippingGrade;
             ShippingRemark = shippingRemark;
             Weight = weight;
-        }
 
-        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit,
-            string color, string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderQuantity,
-            string packagingType, decimal packagingQty, string packagingUnit, int buyerId) : this()
-        {
-            ProductionOrderId = productionOrderId;
-            ProductionOrderNo = productionOrderNo;
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+
             CartNo = cartNo;
-            Buyer = buyer;
-            Construction = construction;
-            Unit = unit;
-            Color = color;
-            Motif = motif;
-            UomUnit = uomUnit;
             Remark = remark;
-            Grade = grade;
-            Status = status;
-            Balance = balance;
-            PackingInstruction = packingInstruction;
-            ProductionOrderType = productionOrderType;
-            ProductionOrderOrderQuantity = productionOrderQuantity;
-            PackagingType = packagingType;
-            PackagingQty = packagingQty;
-            PackagingUnit = packagingUnit;
+            AdjDocumentNo = adjDocumentNo;
 
-            Area = area;
-            DestinationArea = destinationArea;
-            HasNextAreaDocument = hasNextAreaDocument;
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
 
-            BuyerId = buyerId;
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
+            DestinationBuyerName = destinationBuyerName;
+            InventoryType = inventoryType;
         }
-        /// <summary>
-        /// this Constructor for insert data OutputPackagingArea
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="destinationArea"></param>
-        /// <param name="hasNextAreaDocument"></param>
-        /// <param name="productionOrderId"></param>
-        /// <param name="productionOrderNo"></param>
-        /// <param name="cartNo"></param>
-        /// <param name="buyer"></param>
-        /// <param name="construction"></param>
-        /// <param name="unit"></param>
-        /// <param name="color"></param>
-        /// <param name="motif"></param>
-        /// <param name="uomUnit"></param>
-        /// <param name="remark"></param>
-        /// <param name="grade"></param>
-        /// <param name="status"></param>
-        /// <param name="balance"></param>
-        /// <param name="packingInstruction"></param>
-        /// <param name="productionOrderType"></param>
-        /// <param name="productionOrderQuantity"></param>
-        /// <param name="packagingType"></param>
-        /// <param name="packagingQty"></param>
-        /// <param name="packagingUnit"></param>
-        /// <param name="productionOrderOrderQuantity"></param>
-        /// <param name="description"></param>
-        /// <param name="buyerId"></param>
-        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit,
-            string color, string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderQuantity,
-            string packagingType, decimal packagingQty, string packagingUnit, double productionOrderOrderQuantity, string description, int buyerId) : this()
-        {
-            ProductionOrderId = productionOrderId;
-            ProductionOrderNo = productionOrderNo;
-            CartNo = cartNo;
-            Buyer = buyer;
-            Construction = construction;
-            Unit = unit;
-            Color = color;
-            Motif = motif;
-            UomUnit = uomUnit;
-            Remark = remark;
-            Grade = grade;
-            Status = status;
-            Balance = balance;
-            PackingInstruction = packingInstruction;
-            ProductionOrderType = productionOrderType;
-            ProductionOrderOrderQuantity = productionOrderQuantity;
-            PackagingType = packagingType;
-            PackagingQty = packagingQty;
-            PackagingUnit = packagingUnit;
 
-            Area = area;
-            DestinationArea = destinationArea;
-            HasNextAreaDocument = hasNextAreaDocument;
-            ProductionOrderOrderQuantity = productionOrderOrderQuantity;
-            Description = description;
-
-            BuyerId = buyerId;
-        }
-        /// <summary>
-        /// this Constructor for insert data OutputPackagingArea if has ID dyeing Printing on it
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="destinationArea"></param>
-        /// <param name="hasNextAreaDocument"></param>
-        /// <param name="productionOrderId"></param>
-        /// <param name="productionOrderNo"></param>
-        /// <param name="cartNo"></param>
-        /// <param name="buyer"></param>
-        /// <param name="construction"></param>
-        /// <param name="unit"></param>
-        /// <param name="color"></param>
-        /// <param name="motif"></param>
-        /// <param name="uomUnit"></param>
-        /// <param name="remark"></param>
-        /// <param name="grade"></param>
-        /// <param name="status"></param>
-        /// <param name="balance"></param>
-        /// <param name="packingInstruction"></param>
-        /// <param name="productionOrderType"></param>
-        /// <param name="productionOrderQuantity"></param>
-        /// <param name="packagingType"></param>
-        /// <param name="packagingQty"></param>
-        /// <param name="packagingUnit"></param>
-        /// <param name="productionOrderOrderQuantity"></param>
-        /// <param name="description"></param>
-        ///  <param name="buyerId"></param>
-        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit,
-            string color, string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderQuantity,
-            string packagingType, decimal packagingQty, string packagingUnit, double productionOrderOrderQuantity, string description, int dyeingPrintintOutputId, int buyerId) : this()
-        {
-            ProductionOrderId = productionOrderId;
-            ProductionOrderNo = productionOrderNo;
-            CartNo = cartNo;
-            Buyer = buyer;
-            Construction = construction;
-            Unit = unit;
-            Color = color;
-            Motif = motif;
-            UomUnit = uomUnit;
-            Remark = remark;
-            Grade = grade;
-            Status = status;
-            Balance = balance;
-            PackingInstruction = packingInstruction;
-            ProductionOrderType = productionOrderType;
-            ProductionOrderOrderQuantity = productionOrderQuantity;
-            PackagingType = packagingType;
-            PackagingQty = packagingQty;
-            PackagingUnit = packagingUnit;
-
-            Area = area;
-            DestinationArea = destinationArea;
-            HasNextAreaDocument = hasNextAreaDocument;
-            ProductionOrderOrderQuantity = productionOrderOrderQuantity;
-            Description = description;
-            DyeingPrintingAreaOutputId = dyeingPrintintOutputId;
-
-            BuyerId = buyerId;
-        }
         /// <summary>
         /// Using For Packaging Area when you want to set with SPP input
         /// </summary>
@@ -351,9 +700,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
         /// <param name="dyeingPrintintOutputId"></param>
         /// <param name="dyeingPrintingAreaInputProductionOrderId"></param>
         /// <param name="buyerId"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
         public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit,
             string color, string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderQuantity,
-            string packagingType, decimal packagingQty, string packagingUnit, double productionOrderOrderQuantity, string description, int dyeingPrintintOutputId, int dyeingPrintingAreaInputProductionOrderId, int buyerId) : this()
+            string packagingType, decimal packagingQty, string packagingUnit, double productionOrderOrderQuantity, string description, int dyeingPrintintOutputId,
+            int dyeingPrintingAreaInputProductionOrderId, int buyerId, int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, int processTypeId, string processTypeName,
+             int yarnMaterialId, string yarnMaterialName,
+             int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth) : this()
         {
             ProductionOrderId = productionOrderId;
             ProductionOrderNo = productionOrderNo;
@@ -385,39 +746,291 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
 
             BuyerId = buyerId;
 
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
         }
 
-        public DyeingPrintingAreaOutputProductionOrderModel(string avalType,
-                                                            string avalCartNo,
-                                                            string avalUomUnit,
-                                                            double avalQuantity,
-                                                            double avalQuantityKg) : this()
-        {
-            AvalType = avalType;
-            AvalCartNo = avalCartNo;
-            UomUnit = avalUomUnit;
-            Balance = avalQuantity;
-            AvalQuantityKg = avalQuantityKg;
-        }
         /// <summary>
-        /// Insert Aval with existing bon
+        /// Using For Packaging Area when you want to set with SPP input and Prev Spp In that decrease
         /// </summary>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderQuantity"></param>
+        /// <param name="packagingType"></param>
+        /// <param name="packagingQty"></param>
+        /// <param name="packagingUnit"></param>
+        /// <param name="productionOrderOrderQuantity"></param>
+        /// <param name="description"></param>
+        /// <param name="dyeingPrintintOutputId"></param>
+        /// <param name="dyeingPrintingAreaInputProductionOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="prevSppInJson"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(string area, string destinationArea, bool hasNextAreaDocument, long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit,
+            string color, string motif, string uomUnit, string remark, string productionMachine, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderQuantity,
+            string packagingType, decimal packagingQty, string packagingUnit, double productionOrderOrderQuantity, string description, int dyeingPrintintOutputId, int dyeingPrintingAreaInputProductionOrderId, int buyerId, string prevSppInJson,
+            int materialId, string materialName, int materialConstructionId, string materialConstructionName, string materialWidth, int processTypeId, string processTypeName,
+            int yarnMaterialId, string yarnMaterialName,
+            int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth, DateTimeOffset dateIn, DateTimeOffset dateOut) : this()
+             
+        {
+            ProductionOrderId = productionOrderId;
+            ProductionOrderNo = productionOrderNo;
+            CartNo = cartNo;
+            Buyer = buyer;
+            Construction = construction;
+            Unit = unit;
+            Color = color;
+            Motif = motif;
+            UomUnit = uomUnit;
+            Remark = remark;
+            ProductionMachine = productionMachine;
+            Grade = grade;
+            Status = status;
+            Balance = balance;
+            PackingInstruction = packingInstruction;
+            ProductionOrderType = productionOrderType;
+            ProductionOrderOrderQuantity = productionOrderQuantity;
+            PackagingType = packagingType;
+            PackagingQty = packagingQty;
+            PackagingUnit = packagingUnit;
+
+            Area = area;
+            DestinationArea = destinationArea;
+            HasNextAreaDocument = hasNextAreaDocument;
+            ProductionOrderOrderQuantity = productionOrderOrderQuantity;
+            Description = description;
+            DyeingPrintingAreaOutputId = dyeingPrintintOutputId;
+            DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductionOrderId;
+
+            BuyerId = buyerId;
+            PrevSppInJson = prevSppInJson;
+
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
+        }
+
+        /// <summary>
+        /// Aval Adj
+        /// </summary>
+        /// <param name="avalType"></param>
+        /// <param name="avalCartNo"></param>
+        /// <param name="avalUomUnit"></param>
+        /// <param name="avalQuantity"></param>
+        /// <param name="avalQuantityKg"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="area"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(string area, bool hasNextAreaDocument, string avalType, double avalQuantity, double avalQuantityKg, string adjDocumentNo, int avalTransformationId,DateTimeOffset dateOut) : this()
+        {
+            Area = area;
+            HasNextAreaDocument = hasNextAreaDocument;
+            AdjDocumentNo = adjDocumentNo;
+            AvalType = avalType;
+            Balance = avalQuantity;
+            AvalQuantityKg = avalQuantityKg;
+            DyeingPrintingAreaInputProductionOrderId = avalTransformationId;
+           
+            DateOut = dateOut;
+        }
+
+        /// <summary>
+        /// insert aval using prev total weight
+        /// </summary>
+        /// <param name="avalType"></param>
+        /// <param name="avalCartNo"></param>
+        /// <param name="avalUomUnit"></param>
+        /// <param name="avalQuantityOut"></param>
+        /// <param name="avalQuantityKgOut"></param>
+        /// <param name="avalQuantity"></param>
+        /// <param name="avalQuantityTotal"></param>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="deliveryNote"></param>
         public DyeingPrintingAreaOutputProductionOrderModel(string avalType,
                                                             string avalCartNo,
                                                             string avalUomUnit,
+                                                            double avalQuantityOut,
+                                                            double avalQuantityKgOut,
                                                             double avalQuantity,
-                                                            double avalQuantityKg,
-                                                            int dyeingPrintingOutputId) : this()
+                                                            double avalQuantityTotal,
+                                                            string area,
+                                                            string destinationArea,
+                                                            string deliveryNote,
+                                                            string prevAval,
+                                                            int dyeingPrintingAreaInputProductionOrderId,
+                                                            DateTimeOffset dateOut) : this()
         {
             AvalType = avalType;
             AvalCartNo = avalCartNo;
             UomUnit = avalUomUnit;
-            Balance = avalQuantity;
-            AvalQuantityKg = avalQuantityKg;
-            DyeingPrintingAreaOutputId = dyeingPrintingOutputId;
+            Balance = avalQuantityOut;
+            AvalQuantityKg = avalQuantityKgOut;
+            AvalALength = avalQuantity;
+            AvalBLength = avalQuantityTotal;
+            Area = area;
+            DestinationArea = destinationArea;
+            DeliveryNote = deliveryNote;
+            PrevSppInJson = prevAval;
+            DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductionOrderId;
+            DateOut = dateOut;
         }
-        //Warehouse
-        public DyeingPrintingAreaOutputProductionOrderModel(long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit, string color, string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderOrderQuantity, string packagingType, decimal packagingQty, string packagingUnit, long deliveryOrderSalesId, string deliveryOrderSalesNo, bool hasNextAreaDocument, string area, string destinationArea, int dyeingPrintingAreaInputProductionOrderId, int buyerId) : this()
+
+        /// <summary>
+        ///  Insert Aval with existing bon using prev total weight
+        /// </summary>
+        /// <param name="avalType"></param>
+        /// <param name="avalCartNo"></param>
+        /// <param name="avalUomUnit"></param>
+        /// <param name="avalQuantityOut"></param>
+        /// <param name="avalQuantityKgOut"></param>
+        /// <param name="avalQuantity"></param>
+        /// <param name="avalQuantityTotal"></param>
+        /// <param name="dyeingPrintingOutputId"></param>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="deliveryNote"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(string avalType,
+                                                            string avalCartNo,
+                                                            string avalUomUnit,
+                                                            double avalQuantityOut,
+                                                            double avalQuantityKgOut,
+                                                            double avalQuantity,
+                                                            double avalQuantityTotal,
+                                                            int dyeingPrintingOutputId,
+                                                            string area,
+                                                            string destinationArea,
+                                                            string deliveryNote) : this()
+        {
+            AvalType = avalType;
+            AvalCartNo = avalCartNo;
+            UomUnit = avalUomUnit;
+            Balance = avalQuantityOut;
+            AvalQuantityKg = avalQuantityKgOut;
+            AvalALength = avalQuantity;
+            AvalBLength = avalQuantityTotal;
+            DyeingPrintingAreaOutputId = dyeingPrintingOutputId;
+            Area = area;
+            DestinationArea = destinationArea;
+            DeliveryNote = deliveryNote;
+        }
+
+        /// <summary>
+        /// Area Gudang Jadi
+        /// </summary>
+        /// <param name="productionOrderId"></param>
+        /// <param name="productionOrderNo"></param>
+        /// <param name="cartNo"></param>
+        /// <param name="buyer"></param>
+        /// <param name="construction"></param>
+        /// <param name="unit"></param>
+        /// <param name="color"></param>
+        /// <param name="motif"></param>
+        /// <param name="uomUnit"></param>
+        /// <param name="remark"></param>
+        /// <param name="grade"></param>
+        /// <param name="status"></param>
+        /// <param name="balance"></param>
+        /// <param name="packingInstruction"></param>
+        /// <param name="productionOrderType"></param>
+        /// <param name="productionOrderOrderQuantity"></param>
+        /// <param name="packagingType"></param>
+        /// <param name="packagingQty"></param>
+        /// <param name="packagingUnit"></param>
+        /// <param name="deliveryOrderSalesId"></param>
+        /// <param name="deliveryOrderSalesNo"></param>
+        /// <param name="hasNextAreaDocument"></param>
+        /// <param name="area"></param>
+        /// <param name="destinationArea"></param>
+        /// <param name="dyeingPrintingAreaInputProductionOrderId"></param>
+        /// <param name="buyerId"></param>
+        /// <param name="materialId"></param>
+        /// <param name="materialName"></param>
+        /// <param name="materialConstructionId"></param>
+        /// <param name="materialConstructionName"></param>
+        /// <param name="materialWidth"></param>
+        /// <param name="adjDocumentNo"></param>
+        /// <param name="processTypeId"></param>
+        /// <param name="processTypeName"></param>
+        /// <param name="yarnMaterialId"></param>
+        /// <param name="yarnMaterialName"></param>
+        /// <param name="destinationBuyerName"></param>
+        /// <param name="inventoryType"></param>
+        public DyeingPrintingAreaOutputProductionOrderModel(long productionOrderId, string productionOrderNo, string cartNo, string buyer, string construction, string unit, string color,
+            string motif, string uomUnit, string remark, string grade, string status, double balance, string packingInstruction, string productionOrderType, double productionOrderOrderQuantity,
+            string packagingType, decimal packagingQty, string packagingUnit, long deliveryOrderSalesId, string deliveryOrderSalesNo, bool hasNextAreaDocument, string area,
+            string destinationArea, int dyeingPrintingAreaInputProductionOrderId, int buyerId, int materialId, string materialName, int materialConstructionId, string materialConstructionName,
+            string materialWidth, string adjDocumentNo, int processTypeId, string processTypeName,
+            int yarnMaterialId, string yarnMaterialName, int productSKUId, int fabricSKUId, string productSKUCode, bool hasPrintingProductSKU, int productPackingId, int fabricPackingId, string productPackingCode, bool hasPrintingProductPacking, double packingLength, string finishWidth, DateTimeOffset dateIn, DateTimeOffset dateOut, string destinationBuyerName, string inventoryType) : this()
+             
         {
             ProductionOrderId = productionOrderId;
             ProductionOrderNo = productionOrderNo;
@@ -446,79 +1059,37 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductionOrderId;
 
             BuyerId = buyerId;
-        }
 
-        //All Properties
-        //public DyeingPrintingAreaOutputProductionOrderModel(long productionOrderId, 
-        //                                                    string productionOrderNo, 
-        //                                                    string cartNo, 
-        //                                                    string buyer, 
-        //                                                    string construction, 
-        //                                                    string unit, 
-        //                                                    string color, 
-        //                                                    string motif, 
-        //                                                    string uomUnit, 
-        //                                                    string remark, 
-        //                                                    string grade, 
-        //                                                    string status, 
-        //                                                    double balance, 
-        //                                                    string packingInstruction, 
-        //                                                    string productionOrderType, 
-        //                                                    double productionOrderOrderQuantity, 
-        //                                                    string packagingType, 
-        //                                                    decimal packagingQty, 
-        //                                                    string packagingUnit, 
-        //                                                    double avalALength, 
-        //                                                    double avalBLength, 
-        //                                                    double avalConnectionLength, 
-        //                                                    long deliveryOrderSalesId, 
-        //                                                    string deliveryOrderSalesNo, 
-        //                                                    string avalType, 
-        //                                                    string avalCartNo, 
-        //                                                    double avalQuantityKg, 
-        //                                                    bool hasNextAreaDocument, 
-        //                                                    string area, 
-        //                                                    string destinationArea, 
-        //                                                    string description, 
-        //                                                    string deliveryNote, 
-        //                                                    int dyeingPrintingAreaInputProductionOrderId, 
-        //                                                    int dyeingPrintingAreaOutputId)
-        //{
-        //    ProductionOrderId = productionOrderId;
-        //    ProductionOrderNo = productionOrderNo;
-        //    CartNo = cartNo;
-        //    Buyer = buyer;
-        //    Construction = construction;
-        //    Unit = unit;
-        //    Color = color;
-        //    Motif = motif;
-        //    UomUnit = uomUnit;
-        //    Remark = remark;
-        //    Grade = grade;
-        //    Status = status;
-        //    Balance = balance;
-        //    PackingInstruction = packingInstruction;
-        //    ProductionOrderType = productionOrderType;
-        //    ProductionOrderOrderQuantity = productionOrderOrderQuantity;
-        //    PackagingType = packagingType;
-        //    PackagingQty = packagingQty;
-        //    PackagingUnit = packagingUnit;
-        //    AvalALength = avalALength;
-        //    AvalBLength = avalBLength;
-        //    AvalConnectionLength = avalConnectionLength;
-        //    DeliveryOrderSalesId = deliveryOrderSalesId;
-        //    DeliveryOrderSalesNo = deliveryOrderSalesNo;
-        //    AvalType = avalType;
-        //    AvalCartNo = avalCartNo;
-        //    AvalQuantityKg = avalQuantityKg;
-        //    HasNextAreaDocument = hasNextAreaDocument;
-        //    Area = area;
-        //    DestinationArea = destinationArea;
-        //    Description = description;
-        //    DeliveryNote = deliveryNote;
-        //    DyeingPrintingAreaInputProductionOrderId = dyeingPrintingAreaInputProductionOrderId;
-        //    DyeingPrintingAreaOutputId = dyeingPrintingAreaOutputId;
-        //}
+            MaterialId = materialId;
+            MaterialName = materialName;
+            MaterialConstructionName = materialConstructionName;
+            MaterialConstructionId = materialConstructionId;
+            MaterialWidth = materialWidth;
+            FinishWidth = finishWidth;
+
+            AdjDocumentNo = adjDocumentNo;
+
+            ProcessTypeId = processTypeId;
+            ProcessTypeName = processTypeName;
+            YarnMaterialId = yarnMaterialId;
+            YarnMaterialName = yarnMaterialName;
+
+            ProductSKUId = productSKUId;
+            FabricSKUId = fabricSKUId;
+            ProductSKUCode = productSKUCode;
+            HasPrintingProductSKU = hasPrintingProductSKU;
+
+            ProductPackingId = productPackingId;
+            FabricPackingId = fabricPackingId;
+            ProductPackingCode = productPackingCode;
+            HasPrintingProductPacking = hasPrintingProductPacking;
+
+            PackagingLength = packingLength;
+            DateIn = dateIn;
+            DateOut = dateOut;
+            DestinationBuyerName = destinationBuyerName;
+            InventoryType = inventoryType;
+        }
 
         public void SetProductionOrder(long newProductionOrderId, string newProductionOrderNo, string newProductionOrderType, double newProductionOrderQuantity, string user, string agent)
         {
@@ -632,6 +1203,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             if (newBalance != Balance)
             {
                 Balance = newBalance;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetAvalQuantityKg(double newAvalQuantityKg, string user, string agent)
+        {
+            if (newAvalQuantityKg != AvalQuantityKg)
+            {
+                AvalQuantityKg = newAvalQuantityKg;
                 this.FlagForUpdate(user, agent);
             }
         }
@@ -817,6 +1397,193 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaM
             if (newAvalType != AvalType)
             {
                 AvalType = newAvalType;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetMaterial(int newId, string newName, string user, string agent)
+        {
+            if (newId != MaterialId)
+            {
+                MaterialId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+
+            if (newName != MaterialName)
+            {
+                MaterialName = newName;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetMaterialConstruction(int newId, string newName, string user, string agent)
+        {
+            if (newId != MaterialConstructionId)
+            {
+                MaterialConstructionId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+
+            if (newName != MaterialConstructionName)
+            {
+                MaterialConstructionName = newName;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetMaterialWidth(string newMaterialWidth, string user, string agent)
+        {
+
+            if (newMaterialWidth != MaterialWidth)
+            {
+                MaterialWidth = newMaterialWidth;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetMachine(string newMachine, string user, string agent)
+        {
+
+            if (newMachine != Machine)
+            {
+                Machine = newMachine;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetProductionMachine(string productionMachine, string user, string agent)
+        {
+
+            if (productionMachine != ProductionMachine)
+            {
+                ProductionMachine = productionMachine;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetAdjDocumentNo(string newAdjDocumentNo, string user, string agent)
+        {
+
+            if (newAdjDocumentNo != AdjDocumentNo)
+            {
+                AdjDocumentNo = newAdjDocumentNo;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetProductSKUId(int newId, string user, string agent)
+        {
+            if(newId != ProductSKUId)
+            {
+                ProductSKUId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetFabricSKUId(int newId, string user, string agent)
+        {
+            if (newId != FabricSKUId)
+            {
+                FabricSKUId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetProductSKUCode(string newProductSKUCode, string user, string agent)
+        {
+
+            if (newProductSKUCode != ProductSKUCode)
+            {
+                ProductSKUCode = newProductSKUCode;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetHasPrintingProductSKU(bool newHasPrintingProductSKU, string user, string agent)
+        {
+
+            if (newHasPrintingProductSKU != HasPrintingProductSKU)
+            {
+                HasPrintingProductSKU = newHasPrintingProductSKU;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetProductPackingId(int newId, string user, string agent)
+        {
+            if (newId != ProductPackingId)
+            {
+                ProductPackingId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetFabricPackingId(int newId, string user, string agent)
+        {
+            if (newId != FabricPackingId)
+            {
+                FabricPackingId = newId;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+
+
+        public void SetProductPackingCode(string newProductPackingCode, string user, string agent)
+        {
+
+            if (newProductPackingCode != ProductPackingCode)
+            {
+                ProductPackingCode = newProductPackingCode;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetHasPrintingProductPacking(bool newHasPrintingProductPacking, string user, string agent)
+        {
+
+            if (newHasPrintingProductPacking != HasPrintingProductPacking)
+            {
+                HasPrintingProductPacking = newHasPrintingProductPacking;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetPackagingLength(double newPackagingLength, string user, string agent)
+        {
+            if (newPackagingLength != PackagingLength)
+            {
+                PackagingLength = newPackagingLength;
+
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetNextAreaInputStatus(string newNextAreaInputStatus, string user, string agent)
+        {
+
+            if (newNextAreaInputStatus != NextAreaInputStatus)
+            {
+                NextAreaInputStatus = newNextAreaInputStatus;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetFinishWidth(string newFinishWidth, string user, string agent)
+        {
+
+            if (newFinishWidth != FinishWidth)
+            {
+                FinishWidth = newFinishWidth;
+                this.FlagForUpdate(user, agent);
+            }
+        }
+
+        public void SetDateIn(DateTimeOffset NewDateIn, string user, string agent)
+        {
+            if (NewDateIn != DateIn)
+            {
+                DateIn = NewDateIn;
                 this.FlagForUpdate(user, agent);
             }
         }

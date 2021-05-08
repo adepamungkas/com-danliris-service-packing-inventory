@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
+using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentPackingList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,23 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 {
     public interface IGarmentPackingListService
     {
-        Task<int> Create(GarmentPackingListViewModel viewModel);
+        Task<string> Create(GarmentPackingListViewModel viewModel);
         Task<GarmentPackingListViewModel> ReadById(int id);
-		ListResult<GarmentPackingListViewModel> Read(int page, int size, string filter, string order, string keyword);
-		ListResult<GarmentPackingListViewModel> ReadNotUsed(int page, int size, string filter, string order, string keyword);
-
-		Task<int> Update(int id, GarmentPackingListViewModel viewModel);
+        ListResult<GarmentPackingListViewModel> Read(int page, int size, string filter, string order, string keyword);
+        ListResult<GarmentPackingListViewModel> ReadNotUsed(int page, int size, string filter, string order, string keyword);
+        ListResult<GarmentPackingListViewModel> ReadNotUsedCostStructure(int page, int size, string filter, string order, string keyword);
+        Task<int> Update(int id, GarmentPackingListViewModel viewModel);
         Task<int> Delete(int id);
+        Task<MemoryStreamResult> ReadPdfById(int id);
+        Task<MemoryStreamResult> ReadPdfByOrderNo(int id);
+        Task<MemoryStreamResult> ReadPdfFilterCarton(int id);
+        Task<MemoryStreamResult> ReadPdfFilterCartonMD(int id);
+        Task<GarmentPackingListViewModel> ReadByInvoiceNo(string no);
+        Task SetPost(List<int> ids);
+        Task SetUnpost(int id);
+        Task SetApproveMd(int id, GarmentPackingListViewModel viewModel);
+        Task SetApproveShipping(int id, GarmentPackingListViewModel viewModel);
+        Task SetStatus(int id, GarmentPackingListStatusEnum status, string remark = null);
+        Task<MemoryStreamResult> ReadExcelById(int id);
     }
 }

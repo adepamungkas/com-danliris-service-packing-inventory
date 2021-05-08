@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.ShippingNote;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.ShippingNote;
@@ -14,10 +15,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 {
     public class GarmentShippingDebitNoteService : IGarmentShippingDebitNoteService
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IGarmentShippingNoteRepository _repository;
 
         public GarmentShippingDebitNoteService(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             _repository = serviceProvider.GetService<IGarmentShippingNoteRepository>();
         }
 
@@ -45,6 +48,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     Id = model.BuyerId,
                     Code = model.BuyerCode,
                     Name = model.BuyerName
+                },
+                bank = new BankAccount
+                {
+                    id = model.BankId,
+                    bankName = model.BankName,
+                    Currency = new Currency
+                    {
+                        Code = model.BankCurrencyCode
+                    }
                 },
                 totalAmount = model.TotalAmount,
 
@@ -85,7 +97,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             }).ToList();
 
             viewModel.buyer = viewModel.buyer ?? new Buyer();
-            GarmentShippingNoteModel model = new GarmentShippingNoteModel(GarmentShippingNoteTypeEnum.ND, GenerateNo(), viewModel.date.GetValueOrDefault(), viewModel.buyer.Id, viewModel.buyer.Code, viewModel.buyer.Name, viewModel.totalAmount, items);
+            viewModel.bank = viewModel.bank ?? new BankAccount { Currency = new Currency() };
+            viewModel.bank.Currency = viewModel.bank.Currency ?? new Currency();
+            GarmentShippingNoteModel model = new GarmentShippingNoteModel(GarmentShippingNoteTypeEnum.DN, GenerateNo(), viewModel.date.GetValueOrDefault(), viewModel.buyer.Id, viewModel.buyer.Code, viewModel.buyer.Name, viewModel.bank.id, viewModel.bank.bankName, viewModel.bank.Currency.Code, viewModel.totalAmount, items);
 
             return model;
         }
@@ -94,7 +108,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         {
             var year = DateTime.Now.ToString("yy");
 
-            var prefix = $"{year}ND";
+            var prefix = $"DN{year}";
 
             var lastInvoiceNo = _repository.ReadAll().Where(w => w.NoteNo.StartsWith(prefix))
                 .OrderByDescending(o => o.NoteNo)
@@ -121,7 +135,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         public ListResult<GarmentShippingDebitNoteViewModel> Read(int page, int size, string filter, string order, string keyword)
         {
-            var query = _repository.ReadAll().Where(w => w.NoteType == GarmentShippingNoteTypeEnum.ND);
+            var query = _repository.ReadAll().Where(w => w.NoteType == GarmentShippingNoteTypeEnum.DN);
             List<string> SearchAttributes = new List<string>()
             {
                 "NoteNo", "BuyerCode", "BuyerName"
@@ -158,5 +172,61 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             return await _repository.UpdateAsync(id, model);
         }
+
+        public async Task<MemoryStreamResult> ReadPdfById(int id)
+        {
+            var data = await _repository.ReadByIdAsync(id);
+            var viewModel = MapToViewModel(data);
+            viewModel.buyer = await GetBuyer(viewModel.buyer.Id);
+            viewModel.bank = await GetBank(viewModel.bank.id);
+
+            var PdfTemplate = new GarmentShippingDebitNotePdfTemplate();
+
+            var stream = PdfTemplate.GeneratePdfTemplate(viewModel);
+
+            return new MemoryStreamResult(stream, "Debit Note " + data.NoteNo + ".pdf");
+        }
+
+        async Task<Buyer> GetBuyer(int id)
+        {
+            string buyerUri = "master/garment-buyers";
+            IHttpClientService httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = await httpClient.GetAsync($"{ApplicationSetting.CoreEndpoint}{buyerUri}/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                Buyer viewModel = JsonConvert.DeserializeObject<Buyer>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                return new Buyer();
+            }
+        }
+
+        async Task<BankAccount> GetBank(int id)
+        {
+            string bankUri = "master/account-banks";
+            IHttpClientService httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = await httpClient.GetAsync($"{ApplicationSetting.CoreEndpoint}{bankUri}/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                BankAccount viewModel = JsonConvert.DeserializeObject<BankAccount>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                return new BankAccount
+                {
+                    Currency = new Currency()
+                };
+            }
+        }
+
     }
 }

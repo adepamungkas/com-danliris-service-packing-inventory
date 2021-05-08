@@ -1,6 +1,7 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.CommonViewModelObjectProperties;
 using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,7 +17,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public string To { get; set; }
 		public BuyerAgent BuyerAgent { get; set; }
 		public string Consignee { get; set; }
-		public string LCNo { get;  set; }
+        public string ConsigneeAddress { get; set; }
+        public string LCNo { get;  set; }
 		public string IssuedBy { get; set; }
 		public Section Section { get; set; }
 		public string ShippingPer { get; set; }
@@ -34,7 +36,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public string NPENo { get; set; }
 		public DateTimeOffset? NPEDate { get; set; }
 		public string Description { get; set; }
-		public decimal AmountToBePaid { get; set; }
+        public string Remark { get; set; }
+        public decimal AmountToBePaid { get; set; }
 		public string CPrice { get; set; }
 		public string Say { get; set; }
 		public string Memo { get; set; }
@@ -46,10 +49,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public string COTP { get; set; }
 		public DateTimeOffset? COTPDate { get; set; }
 		public decimal TotalAmount { get; set; }
-		public ICollection<GarmentShippingInvoiceItemViewModel> Items { get;  set; }
+        public string DeliverTo { get; set; }
+        public ICollection<GarmentShippingInvoiceItemViewModel> Items { get;  set; }
 		public ICollection<GarmentShippingInvoiceAdjustmentViewModel> GarmentShippingInvoiceAdjustments { get; set; }
+        public ICollection<GarmentShippingInvoiceUnitViewModel> GarmentShippingInvoiceUnits { get; set; }
 
-		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
 			if (string.IsNullOrEmpty(InvoiceNo))
 				yield return new ValidationResult("InvoiceNo harus diisi", new List<string> { "InvoiceNo" });
@@ -70,8 +75,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 			if (string.IsNullOrEmpty(ShippingPer))
 				yield return new ValidationResult("ShippingPer harus diisi", new List<string> { "ShippingPer" });
 
-			if (string.IsNullOrEmpty(ConfirmationOfOrderNo))
-				yield return new ValidationResult("ConfirmationOfOrderNo harus diisi", new List<string> { "ConfirmationOfOrderNo" });
+			//if (string.IsNullOrEmpty(ConfirmationOfOrderNo))
+			//	yield return new ValidationResult("ConfirmationOfOrderNo harus diisi", new List<string> { "ConfirmationOfOrderNo" });
 
 			if (string.IsNullOrEmpty(ShippingStaff))
 				yield return new ValidationResult("ShippingStaff harus diisi", new List<string> { "ShippingStaff" });
@@ -79,8 +84,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 			if (string.IsNullOrEmpty(FabricType))
 				yield return new ValidationResult("FabricType harus diisi", new List<string> { "FabricType" });
 
-			if (string.IsNullOrEmpty(BankAccount))
-				yield return new ValidationResult("BankDetail harus diisi", new List<string> { "BankAccount" });
+			//if (string.IsNullOrEmpty(BankAccount))
+			//	yield return new ValidationResult("BankDetail harus diisi", new List<string> { "BankAccount" });
 
 			if (PaymentDue.Equals(0))
 				yield return new ValidationResult("PaymentDue harus diisi", new List<string> { "PaymentDue" });
@@ -88,48 +93,84 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 			if (string.IsNullOrEmpty(CPrice))
 				yield return new ValidationResult("CPrice harus diisi", new List<string> { "CPrice" });
 
-			int Count = 0;
-			string DetailErrors = "[";
+            if (string.IsNullOrEmpty(ConsigneeAddress))
+                yield return new ValidationResult("ConsigneeAddress harus diisi", new List<string> { "ConsigneeAddress" });
 
-			if (Items.Count == 0)
+
+            if (Items.Count == 0)
 			{
-				yield return new ValidationResult("Detail  harus Diisi", new List<string> { "Items" });
+				yield return new ValidationResult("Detail  harus Diisi", new List<string> { "ItemsCount" });
 			}
 			else
 			{
+
+				int errorItemsCount = 0;
+				List<Dictionary<string, object>> errorItems = new List<Dictionary<string, object>>();
+
 				foreach (var item in Items)
 				{
-					DetailErrors += "{";
+					Dictionary<string, object> errorItem = new Dictionary<string, object>();
 
-					if (string.IsNullOrEmpty(item.RONo))
+					if (string.IsNullOrWhiteSpace(item.RONo))
 					{
-						Count++;
-						DetailErrors += "RONo: 'RONo Harus Diisi!',";
-					}
-					if (string.IsNullOrEmpty(item.ComodityDesc))
-					{
-						Count++;
-						DetailErrors += "ComodityDesc: 'ComodityDesc Harus Diisi!',";
+						errorItem["RONo"] = "RONo tidak boleh kosong";
+						errorItemsCount++;
 					}
 
 					if (item.Quantity == 0)
 					{
-						Count++;
-						DetailErrors += "Quantity: 'Quantity Harus Diisi!',";
+						errorItem["Quantity"] = "Quantity tidak boleh 0";
+						errorItemsCount++;
 					}
 
 					if (item.Price == 0)
 					{
-						Count++;
-						DetailErrors += "Price: 'Price Harus Diisi!',";
+						errorItem["Price"] = "Price tidak boleh 0";
+						errorItemsCount++;
 					}
 
-					DetailErrors += "}, ";
+
+					errorItems.Add(errorItem);
+				}
+				if (errorItemsCount > 0)
+				{
+					yield return new ValidationResult(JsonConvert.SerializeObject(errorItems), new List<string> { "Items" });
+				}
+
+
+			}
+			if (GarmentShippingInvoiceAdjustments.Count > 0)
+			{
+				int errorAdjustmentCount = 0;
+				List<Dictionary<string, object>> errorAdjustments = new List<Dictionary<string, object>>();
+
+
+				foreach (var item in GarmentShippingInvoiceAdjustments)
+				{
+					Dictionary<string, object> errorItem = new Dictionary<string, object>();
+
+
+					if (string.IsNullOrEmpty(item.AdjustmentDescription) && item.AdjustmentValue > 0)
+					{
+						errorItem["AdjustmentDescription"] = "AdjustmentDescription tidak boleh kosong";
+						errorAdjustmentCount++;
+						
+					}
+					if (item.AdjustmentValue == 0 && item.AdjustmentDescription != "")
+					{
+						errorItem["AdjustmentValue"] = "AdjustmentValue tidak boleh 0";
+						errorAdjustmentCount++;
+					}
+					errorAdjustments.Add(errorItem);
+
+				}
+				if (errorAdjustmentCount > 0)
+				{
+				 
+					yield return new ValidationResult(JsonConvert.SerializeObject(errorAdjustments), new List<string> { "GarmentShippingInvoiceAdjustments" });
 				}
 			}
-
-			DetailErrors += "]";
-
+			
 		}
 	}
 }

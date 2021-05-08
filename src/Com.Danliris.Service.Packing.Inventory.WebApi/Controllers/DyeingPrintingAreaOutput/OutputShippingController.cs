@@ -115,9 +115,32 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             {
                 VerifyUser();
                 byte[] xlsInBytes;
+                var data = await _service.ReadById(id);
+
                 int clientTimeZoneOffset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-                var Result = await _service.GenerateExcel(id);
-                string filename = "Shipping Area Note Dyeing/Printing.xlsx";
+
+                var Result = _service.GenerateExcel(data, clientTimeZoneOffset);
+                string filename = $"Pencatatan Pengeluaran Area Shipping Dyeing/Printing - {data.BonNo}.xlsx";
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("xls")]
+        public IActionResult GetExcel([FromHeader(Name = "x-timezone-offset")] string timezone, [FromQuery] DateTimeOffset? dateFrom = null, [FromQuery] DateTimeOffset? dateTo = null)
+        {
+            try
+            {
+                VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = _service.GenerateExcel(dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Pencatatan Pengeluaran Area Shipping Dyeing/Printing.xlsx";
                 xlsInBytes = Result.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
                 return file;
@@ -293,23 +316,57 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             }
         }
 
-        //[HttpGet("output-production-orders/{id}")]
-        //public IActionResult GetProductionOrdersByBon(int id)
-        //{
-        //    try
-        //    {
+        [HttpGet("adj-production-order-loader")]
+        public IActionResult GetAdjProductionOrder([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
+           [FromQuery] string filter = "{}")
+        {
+            try
+            {
 
-        //        var data = _service.GetOutputShippingProductionOrdersByBon(id);
-        //        return Ok(new
-        //        {
-        //            data
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+                var data = _service.GetDistinctAllProductionOrder(page, size, filter, order, keyword);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
-        //    }
-        //}
+            }
+        }
+
+        [HttpGet("production-order-loader")]
+        public IActionResult GetDistinctProductionOrder([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
+            [FromQuery] string filter = "{}")
+        {
+            try
+            {
+
+                var data = _service.GetDistinctProductionOrder(page, size, filter, order, keyword);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+        [HttpGet("input-production-orders/production-order")]
+        public IActionResult GetProductionOrdersByProductionOrder([FromQuery] long productionOrderId = 0)
+        {
+            try
+            {
+
+                var data = _service.GetInputShippingProductionOrdersByProductionOrder(productionOrderId);
+                return Ok(new
+                {
+                    data
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
     }
 }

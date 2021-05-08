@@ -188,8 +188,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
             cell.Phrase = new Phrase($"NO. : {model.BonNo}", TEXT_FONT);
             table.AddCell(cell);
 
-            string buyerName = model.ShippingProductionOrders.FirstOrDefault()?.Buyer;
+            string buyerName = model.ShippingProductionOrders.FirstOrDefault()?.DeliveryOrder.Name;
             cell.Phrase = new Phrase($"U/ dikirim kepada: {buyerName}", TEXT_FONT);
+            //string buyerName = model.ShippingProductionOrders.FirstOrDefault()?.Buyer;
+            //cell.Phrase = new Phrase($"U/ dikirim kepada: {buyerName}", TEXT_FONT);
+            //string productionNo = model.ShippingProductionOrders.FirstOrDefault()?.ProductionOrder.No;
+            //cell.Phrase = new Phrase($"U/ dikirim kepada: {productionNo}", TEXT_FONT);
             table.AddCell(cell);
 
             cell.Phrase = new Phrase("", TEXT_FONT);
@@ -421,7 +425,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
                 cellHeader.Phrase = new Phrase(detail.Packing, TEXT_FONT);
                 table.AddCell(cellHeader);
 
-                var yardLength = 1.093613298 * detail.Qty;
+                var convyardLength = 1.09361 * detail.Qty;
+                var yardLength = Math.Round(convyardLength, 0);
                 cellRight.Phrase = new Phrase(yardLength.ToString("N2", CultureInfo.InvariantCulture), TEXT_FONT);
                 table.AddCell(cellRight);
                 yardLengthTotal += yardLength;
@@ -478,7 +483,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
             cellRight.Phrase = new Phrase("", TEXT_FONT);
             table.AddCell(cellRight);
 
-            cellRight.Phrase = new Phrase(yardLengthTotal == 0 ? "" : yardLengthTotal.ToString("N2", CultureInfo.InvariantCulture), TEXT_FONT);
+            var convyardLengthTotal = 1.09361 * (double)lengthTotal;
+            var yardLengthTotal1 = Math.Round(convyardLengthTotal, 0);
+
+            cellRight.Phrase = new Phrase(yardLengthTotal1 == 0 ? "" : yardLengthTotal1.ToString("N2", CultureInfo.InvariantCulture), TEXT_FONT);
             table.AddCell(cellRight);
 
             cellRight.Phrase = new Phrase(lengthTotal == 0 ? "" : lengthTotal.ToString("N2", CultureInfo.InvariantCulture), TEXT_FONT);
@@ -579,7 +587,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
             table.AddCell(cell);
             cell.Phrase = new Phrase("(                        )", TEXT_FONT);
             table.AddCell(cell);
-            cell.Phrase = new Phrase($"({model.CreatedBy})", TEXT_FONT);
+            cell.Phrase = new Phrase($"( SRIWIYATI )", TEXT_FONT);
             table.AddCell(cell);
 
 

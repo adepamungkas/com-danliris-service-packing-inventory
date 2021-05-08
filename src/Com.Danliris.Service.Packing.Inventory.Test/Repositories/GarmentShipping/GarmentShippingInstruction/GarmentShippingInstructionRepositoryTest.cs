@@ -167,9 +167,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
             modelToUpdate.SetCarrier("model.Carrier", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetCartonNo("model.CartonNo", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetDate(model.Date.AddDays(1), data.LastModifiedBy, data.LastModifiedAgent);
-            modelToUpdate.SetEMKLCode("model.EMKLCode", data.LastModifiedBy, data.LastModifiedAgent);
-            modelToUpdate.SetEMKLId(2, data.LastModifiedBy, data.LastModifiedAgent);
-            modelToUpdate.SetEMKLName("model.EMKLName", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetForwarderCode("model.ForwarderCode", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetForwarderId(2, data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetForwarderName("model.ForwarderName", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetForwarderAddress("model.ForwarderName", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetForwarderPhone("model.ForwarderName", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetFeederVessel("model.FeederVessel", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetFlight("model.Flight", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetNotify("model.Notify", data.LastModifiedBy, data.LastModifiedAgent);
@@ -179,7 +181,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
             modelToUpdate.SetShippedBy("model.ShippedBy", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetSpecialInstruction("model.ins", data.LastModifiedBy, data.LastModifiedAgent);
             modelToUpdate.SetTransit("model.transit", data.LastModifiedBy, data.LastModifiedAgent);
-
+            modelToUpdate.SetATTN("model.attn", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetCC("model.cc", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetFax("model.fax", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetPhone("model.phone", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetLadingBill("model.bill", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetFreight("model.freight", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetMarks("model.marks", data.LastModifiedBy, data.LastModifiedAgent);
+            modelToUpdate.SetLadingDate(model.Date.AddDays(1), data.LastModifiedBy, data.LastModifiedAgent);
 
             var result = await repoInstruction2.UpdateAsync(modelToUpdate.Id, modelToUpdate);
 

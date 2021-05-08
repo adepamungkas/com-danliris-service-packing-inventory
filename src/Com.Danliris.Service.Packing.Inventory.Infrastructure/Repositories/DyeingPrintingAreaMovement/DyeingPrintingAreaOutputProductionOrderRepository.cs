@@ -50,17 +50,17 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
 
         public IQueryable<DyeingPrintingAreaOutputProductionOrderModel> ReadAll()
         {
-            return _dbSet.AsNoTracking();
+            return _dbSet.Include(s => s.DyeingPrintingAreaOutput).AsNoTracking();
         }
 
         public IQueryable<DyeingPrintingAreaOutputProductionOrderModel> ReadAllIgnoreQueryFilter()
         {
-            return _dbSet.IgnoreQueryFilters().AsNoTracking();
+            return _dbSet.Include(s => s.DyeingPrintingAreaOutput).IgnoreQueryFilters().AsNoTracking();
         }
 
         public Task<DyeingPrintingAreaOutputProductionOrderModel> ReadByIdAsync(int id)
         {
-            return _dbSet.FirstOrDefaultAsync(s => s.Id == id);
+            return _dbSet.Include(s => s.DyeingPrintingAreaOutput).FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public Task<int> UpdateAsync(int id, DyeingPrintingAreaOutputProductionOrderModel model)
@@ -95,6 +95,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
             modelToUpdate.SetShippingGrade(model.ShippingGrade, _identityProvider.Username, UserAgent);
             modelToUpdate.SetShippingRemark(model.ShippingRemark, _identityProvider.Username, UserAgent);
             modelToUpdate.SetWeight(model.Weight, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterial(model.MaterialId, model.MaterialName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterialConstruction(model.MaterialConstructionId, model.MaterialConstructionName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMachine(model.Machine, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMaterialWidth(model.MaterialWidth, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFinishWidth(model.FinishWidth, _identityProvider.Username, UserAgent);
             return _dbContext.SaveChangesAsync();
         }
 
@@ -102,7 +107,23 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
         {
             var modelToUpdate = _dbSet.FirstOrDefault(s => s.Id == id);
             
-            modelToUpdate.SetHasNextAreaDocument(hasNextAreaDocument, _identityProvider.Username, UserAgent);
+            if(modelToUpdate != null)
+            {
+                modelToUpdate.SetHasNextAreaDocument(hasNextAreaDocument, _identityProvider.Username, UserAgent);
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateFromInputNextAreaFlagAsync(int id, bool hasNextAreaDocument, string nextAreaInputStatus)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(s => s.Id == id);
+
+            if (modelToUpdate != null)
+            {
+                modelToUpdate.SetHasNextAreaDocument(hasNextAreaDocument, _identityProvider.Username, UserAgent);
+                modelToUpdate.SetNextAreaInputStatus(nextAreaInputStatus,_identityProvider.Username, UserAgent);
+            }
 
             return _dbContext.SaveChangesAsync();
         }
@@ -119,10 +140,31 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
             return _dbContext.SaveChangesAsync();
         }
 
+        public Task<int> UpdateFromInputAsync(IEnumerable<int> ids, bool hasNextAreaDocument, string nextAreaInputStatus)
+        {
+            var modelToUpdate = _dbSet.Where(s => ids.Contains(s.Id));
+
+            foreach (var item in modelToUpdate)
+            {
+                item.SetHasNextAreaDocument(hasNextAreaDocument, _identityProvider.Username, UserAgent);
+                item.SetNextAreaInputStatus(nextAreaInputStatus, _identityProvider.Username, UserAgent);
+            }
+
+            return _dbContext.SaveChangesAsync();
+        }
+
         public Task<int> UpdateHasSalesInvoice(int id, bool hasSalesInvoice)
         {
             var modelToUpdate = _dbSet.FirstOrDefault(s => s.Id == id);
             modelToUpdate.SetHasSalesInvoice(hasSalesInvoice, _identityProvider.Username, UserAgent);
+
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateHasPrintingProductPacking(int id, bool hasPrintingProductPacking)
+        {
+            var modelToUpdate = _dbSet.FirstOrDefault(s => s.Id == id);
+            modelToUpdate.SetHasPrintingProductPacking(hasPrintingProductPacking, _identityProvider.Username, UserAgent);
 
             return _dbContext.SaveChangesAsync();
         }

@@ -95,6 +95,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
                     .ThenInclude(i => i.Details)
                         .ThenInclude(i => i.Sizes)
                 .Include(i => i.Measurements)
+                .Include(i => i.StatusActivities)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }
 
@@ -111,24 +112,43 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
             modelToUpdate.SetSectionId(model.SectionId, _identityProvider.Username, UserAgent);
             modelToUpdate.SetSectionCode(model.SectionCode, _identityProvider.Username, UserAgent);
             modelToUpdate.SetDate(model.Date, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetPaymentTerm(model.PaymentTerm, _identityProvider.Username, UserAgent);
             modelToUpdate.SetLCNo(model.LCNo, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetLCDate(model.LCDate, _identityProvider.Username, UserAgent);
             modelToUpdate.SetIssuedBy(model.IssuedBy, _identityProvider.Username, UserAgent);
             modelToUpdate.SetBuyerAgentId(model.BuyerAgentId, _identityProvider.Username, UserAgent);
             modelToUpdate.SetBuyerAgentCode(model.BuyerAgentCode, _identityProvider.Username, UserAgent);
             modelToUpdate.SetBuyerAgentName(model.BuyerAgentName, _identityProvider.Username, UserAgent);
             modelToUpdate.SetDestination(model.Destination, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFinalDestination(model.FinalDestination, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetShipmentMode(model.ShipmentMode, _identityProvider.Username, UserAgent);
             modelToUpdate.SetTruckingDate(model.TruckingDate, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetTruckingEstimationDate(model.TruckingEstimationDate, _identityProvider.Username, UserAgent);
             modelToUpdate.SetExportEstimationDate(model.ExportEstimationDate, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFabricCountryOrigin(model.FabricCountryOrigin, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFabricComposition(model.FabricComposition, _identityProvider.Username, UserAgent);
             modelToUpdate.SetOmzet(model.Omzet, _identityProvider.Username, UserAgent);
             modelToUpdate.SetAccounting(model.Accounting, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetRemarkMd(model.RemarkMd, _identityProvider.Username, UserAgent);
 
             modelToUpdate.SetGrossWeight(model.GrossWeight, _identityProvider.Username, UserAgent);
             modelToUpdate.SetNettWeight(model.NettWeight, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetNetNetWeight(model.NetNetWeight, _identityProvider.Username, UserAgent);
             modelToUpdate.SetTotalCartons(model.TotalCartons, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetSayUnit(model.SayUnit, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetOtherCommodity(model.OtherCommodity, _identityProvider.Username, UserAgent);
 
             modelToUpdate.SetShippingMark(model.ShippingMark, _identityProvider.Username, UserAgent);
             modelToUpdate.SetSideMark(model.SideMark, _identityProvider.Username, UserAgent);
             modelToUpdate.SetRemark(model.Remark, _identityProvider.Username, UserAgent);
+
+            modelToUpdate.SetShippingMarkImagePath(model.ShippingMarkImagePath, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetSideMarkImagePath(model.SideMarkImagePath, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetRemarkImagePath(model.RemarkImagePath, _identityProvider.Username, UserAgent);
+
+            modelToUpdate.SetShippingStaff(model.ShippingStaffId, model.ShippingStaffName, _identityProvider.Username, UserAgent);
+
+            modelToUpdate.SetStatus(model.Status, _identityProvider.Username, UserAgent);
 
             foreach (var itemToUpdate in modelToUpdate.Items)
             {
@@ -148,6 +168,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
                     itemToUpdate.SetUomUnit(item.UomUnit, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetPriceRO(item.PriceRO, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetPrice(item.Price, _identityProvider.Username, UserAgent);
+                    itemToUpdate.SetPriceFob(item.PriceFOB, _identityProvider.Username, UserAgent);
+                    itemToUpdate.SetPriceCmt(item.PriceCMT, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetAmount(item.Amount, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetValas(item.Valas, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetUnitId(item.UnitId, _identityProvider.Username, UserAgent);
@@ -155,8 +177,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
                     itemToUpdate.SetArticle(item.Article, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetOrderNo(item.OrderNo, _identityProvider.Username, UserAgent);
                     itemToUpdate.SetDescription(item.Description, _identityProvider.Username, UserAgent);
-                    itemToUpdate.SetAVG_GW(item.AVG_GW, _identityProvider.Username, UserAgent);
-                    itemToUpdate.SetAVG_NW(item.AVG_NW, _identityProvider.Username, UserAgent);
+                    itemToUpdate.SetDescriptionMd(item.DescriptionMd, _identityProvider.Username, UserAgent);
 
                     foreach (var detailToUpdate in itemToUpdate.Details)
                     {
@@ -166,9 +187,20 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
                             detailToUpdate.SetCarton1(detail.Carton1, _identityProvider.Username, UserAgent);
                             detailToUpdate.SetCarton2(detail.Carton2, _identityProvider.Username, UserAgent);
                             detailToUpdate.SetColour(detail.Colour, _identityProvider.Username, UserAgent);
+                            detailToUpdate.SetStyle(detail.Style, _identityProvider.Username, UserAgent);
                             detailToUpdate.SetCartonQuantity(detail.CartonQuantity, _identityProvider.Username, UserAgent);
                             detailToUpdate.SetQuantityPCS(detail.QuantityPCS, _identityProvider.Username, UserAgent);
                             detailToUpdate.SetTotalQuantity(detail.TotalQuantity, _identityProvider.Username, UserAgent);
+
+                            detailToUpdate.SetLength(detail.Length, _identityProvider.Username, UserAgent);
+                            detailToUpdate.SetWidth(detail.Width, _identityProvider.Username, UserAgent);
+                            detailToUpdate.SetHeight(detail.Height, _identityProvider.Username, UserAgent);
+                            
+                            detailToUpdate.SetGrossWeight(detail.GrossWeight, _identityProvider.Username, UserAgent);
+                            detailToUpdate.SetNetWeight(detail.NetWeight, _identityProvider.Username, UserAgent);
+                            detailToUpdate.SetNetNetWeight(detail.NetNetWeight, _identityProvider.Username, UserAgent);
+
+                            detailToUpdate.SetIndex(detail.Index, _identityProvider.Username, UserAgent);
 
                             foreach (var sizeToUpdate in detailToUpdate.Sizes)
                             {
@@ -187,7 +219,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 
                             foreach (var size in detail.Sizes.Where(w => w.Id == 0))
                             {
-                                detail.Sizes.Add(size);
+                                size.FlagForCreate(_identityProvider.Username, UserAgent);
+                                detailToUpdate.Sizes.Add(size);
                             }
                         }
                         else
@@ -198,7 +231,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 
                     foreach (var detail in item.Details.Where(w => w.Id == 0))
                     {
-                        item.Details.Add(detail);
+                        detail.FlagForCreate(_identityProvider.Username, UserAgent);
+                        foreach (var size in detail.Sizes)
+                        {
+                            size.FlagForCreate(_identityProvider.Username, UserAgent);
+                        }
+                        itemToUpdate.Details.Add(detail);
                     }
                 }
                 else
@@ -210,6 +248,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 
             foreach (var item in model.Items.Where(w => w.Id == 0))
             {
+                item.FlagForCreate(_identityProvider.Username, UserAgent);
+                foreach (var detail in item.Details)
+                {
+                    detail.FlagForCreate(_identityProvider.Username, UserAgent);
+                    foreach (var size in detail.Sizes)
+                    {
+                        size.FlagForCreate(_identityProvider.Username, UserAgent);
+                    }
+                }
                 modelToUpdate.Items.Add(item);
             }
 
@@ -231,6 +278,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 
             foreach (var measurement in model.Measurements.Where(w => w.Id == 0))
             {
+                measurement.FlagForCreate(_identityProvider.Username, UserAgent);
                 modelToUpdate.Measurements.Add(measurement);
             }
 
@@ -244,5 +292,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 				.Where(s=>s.IsUsed == false);
 		}
 
-	}
+        public Task<GarmentPackingListModel> ReadByInvoiceNoAsync(string no)
+        {
+            return _dbSet
+                .Include(i => i.Items)
+                    .ThenInclude(i => i.Details)
+                        .ThenInclude(i => i.Sizes)
+                .Include(i => i.Measurements)
+                .FirstOrDefaultAsync(s => s.InvoiceNo==no);
+        }
+
+        public IQueryable<GarmentPackingListModel> Query => _dbSet.AsQueryable();
+
+        public Task<int> SaveChanges()
+        {
+            return _dbContext.SaveChangesAsync();
+        }
+    }
 }

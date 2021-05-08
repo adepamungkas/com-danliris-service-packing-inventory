@@ -143,12 +143,12 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
         }
 
         [HttpGet("output-production-orders")]
-        public IActionResult GetOutputProductionOrders()
+        public IActionResult GetOutputProductionOrders([FromQuery] long deliveryOrderSalesId = 0)
         {
             try
             {
 
-                var data = _service.GetOutputPreShippingProductionOrders();
+                var data = _service.GetOutputPreShippingProductionOrders(deliveryOrderSalesId);
                 return Ok(new
                 {
                     data
@@ -261,6 +261,43 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
                     error = ex.Message
                 };
                 return StatusCode((int)HttpStatusCode.InternalServerError, error);
+            }
+        }
+
+        [HttpGet("xls")]
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, [FromQuery] DateTimeOffset? dateFrom = null, [FromQuery] DateTimeOffset? dateTo = null)
+        {
+            try
+            {
+                VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = _service.GenerateExcel(dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Penerimaan Area Shipping Dyeing/Printing.xlsx";
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("do-loader")]
+        public IActionResult GetDistinctProductionOrder([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
+            [FromQuery] string filter = "{}")
+        {
+            try
+            {
+
+                var data = _service.GetDistinctDO(page, size, filter, order, keyword);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
             }
         }
 

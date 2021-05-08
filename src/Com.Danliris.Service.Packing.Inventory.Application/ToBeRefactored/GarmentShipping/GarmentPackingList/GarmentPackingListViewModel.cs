@@ -18,19 +18,32 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public Section Section { get; set; }
         public DateTimeOffset? Date { get; set; }
 
+        public string PaymentTerm { get; set; }
         public string LCNo { get; set; }
+        public DateTimeOffset? LCDate { get; set; }
         public string IssuedBy { get; set; }
         public Buyer BuyerAgent { get; set; }
 
         public string Destination { get; set; }
+        public string FinalDestination { get; set; }
+
+        public string ShipmentMode { get; set; }
 
         public DateTimeOffset? TruckingDate { get; set; }
+        public DateTimeOffset? TruckingEstimationDate { get; set; }
         public DateTimeOffset? ExportEstimationDate { get; set; }
 
         public bool Omzet { get; set; }
         public bool Accounting { get; set; }
 
+        public string FabricCountryOrigin { get; set; }
+        public string FabricComposition { get; set; }
+
+        public string RemarkMd { get; set; }
+
         public ICollection<GarmentPackingListItemViewModel> Items { get; set; }
+
+        public string Description { get; set; }
 
         #endregion
 
@@ -38,8 +51,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         public double GrossWeight { get; set; }
         public double NettWeight { get; set; }
+        public double NetNetWeight { get; set; }
         public double TotalCartons { get; set; }
         public ICollection<GarmentPackingListMeasurementViewModel> Measurements { get; set; }
+
+        public string SayUnit { get; set; }
+        public string OtherCommodity { get; set; }
 
         #endregion
 
@@ -49,11 +66,26 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public string SideMark { get; set; }
         public string Remark { get; set; }
 
+        public string ShippingMarkImagePath { get; set; }
+        public string SideMarkImagePath { get; set; }
+        public string RemarkImagePath { get; set; }
+
+        public string ShippingMarkImageFile { get; set; }
+        public string SideMarkImageFile { get; set; }
+        public string RemarkImageFile { get; set; }
+
         #endregion
 
         public bool IsUsed { get; set; }
+        public bool IsPosted { get; set; }
+        public bool IsCostStructured { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        public ShippingStaff ShippingStaff { get; set; }
+
+        public string Status { get; set; }
+        public ICollection<GarmentPackingListStatusActivityViewModel> StatusActivities { get; set; }
+
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             #region Description
 
@@ -81,14 +113,26 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             //    yield return new ValidationResult("Tanggal tidak boleh lebih dari hari ini", new List<string> { "Date" });
             //}
 
-            if (string.IsNullOrEmpty(LCNo))
+            if (string.IsNullOrWhiteSpace(PaymentTerm))
             {
-                yield return new ValidationResult("LC No tidak boleh kosong", new List<string> { "LCNo" });
+                yield return new ValidationResult("Payment Term tidak boleh kosong", new List<string> { "PaymentTerm" });
             }
-
-            if (string.IsNullOrEmpty(IssuedBy))
+            else if (PaymentTerm.ToUpper() == "LC")
             {
-                yield return new ValidationResult("Issued By tidak boleh kosong", new List<string> { "IssuedBy" });
+                if (string.IsNullOrEmpty(LCNo))
+                {
+                    yield return new ValidationResult("LC No tidak boleh kosong", new List<string> { "LCNo" });
+                }
+
+                if (LCDate == null || LCDate == DateTimeOffset.MinValue)
+                {
+                    yield return new ValidationResult("Tgl. LC harus diisi", new List<string> { "LCDate" });
+                }
+
+                if (string.IsNullOrEmpty(IssuedBy))
+                {
+                    yield return new ValidationResult("Issued By tidak boleh kosong", new List<string> { "IssuedBy" });
+                }
             }
 
             if (BuyerAgent == null || BuyerAgent.Id == 0)
@@ -113,7 +157,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             if (Items == null || Items.Count < 1)
             {
-                yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "Items" });
+                yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "ItemsCount" });
             }
             else
             {
@@ -144,7 +188,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                     if (item.Details == null || item.Details.Count < 1)
                     {
-                        errorItem["Details"] = "Details tidak boleh kosong";
+                        errorItem["DetailsCount"] = "Details tidak boleh kosong";
                         errorItemsCount++;
                     }
                     else
@@ -164,7 +208,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                             if (detail.Sizes == null || detail.Sizes.Count < 1)
                             {
-                                errorDetail["Sizes"] = "Sizes tidak boleh kosong";
+                                errorDetail["SizesCount"] = "Sizes tidak boleh kosong";
                                 errorDetailsCount++;
                             }
                             else
@@ -190,12 +234,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                                     errorDetail["Sizes"] = errorSizes;
                                     errorDetailsCount++;
                                 }
-
-                                if (detail.Sizes.Sum(s => s.Quantity) != (detail.CartonQuantity * detail.QuantityPCS))
-                                {
-                                    errorDetail["TotalQtySize"] = "Harus sama dengan Total Qty";
-                                    errorDetailsCount++;
-                                }
+                                //
+                                // if (detail.Sizes.Sum(s => s.Quantity) != (detail.CartonQuantity * detail.QuantityPCS))
+                                // {
+                                //     errorDetail["TotalQtySize"] = "Harus sama dengan Total Qty";
+                                //     errorDetailsCount++;
+                                // }
                             }
 
                             errorDetails.Add(errorDetail);
@@ -207,11 +251,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                             errorItemsCount++;
                         }
 
-                        if (item.Quantity != item.Details.Sum(d => d.CartonQuantity * d.QuantityPCS))
-                        {
-                            errorItem["totalQty"] = "Harus sama dengan Qty";
-                            errorItemsCount++;
-                        }
+                        //if (item.Quantity != item.Details.Sum(d => d.CartonQuantity * d.QuantityPCS))
+                        //{
+                        //    errorItem["totalQty"] = "Harus sama dengan Qty";
+                        //    errorItemsCount++;
+                        //}
                     }
 
                     errorItems.Add(errorItem);
@@ -229,7 +273,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             if (Measurements == null || Measurements.Count < 1)
             {
-                yield return new ValidationResult("Measurements tidak boleh kosong", new List<string> { "Measurements" });
+                yield return new ValidationResult("Measurements tidak boleh kosong", new List<string> { "MeasurementsCount" });
             }
             else
             {
@@ -255,6 +299,16 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 }
             }
 
+            if (string.IsNullOrEmpty(SayUnit))
+            {
+                yield return new ValidationResult("Unit SAY tidak boleh kosong", new List<string> { "SayUnit" });
+            }
+
+            if (string.IsNullOrEmpty(OtherCommodity))
+            {
+                yield return new ValidationResult("Other Commodity tidak boleh kosong", new List<string> { "OtherCommodity" });
+            }
+
             #endregion
 
             #region Mark
@@ -264,15 +318,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Shipping Mark tidak boleh kosong", new List<string> { "ShippingMark" });
             }
 
-            if (string.IsNullOrEmpty(SideMark))
-            {
-                yield return new ValidationResult("Side Mark tidak boleh kosong", new List<string> { "SideMark" });
-            }
+            //if (string.IsNullOrEmpty(SideMark))
+            //{
+            //    yield return new ValidationResult("Side Mark tidak boleh kosong", new List<string> { "SideMark" });
+            //}
 
-            if (string.IsNullOrEmpty(Remark))
-            {
-                yield return new ValidationResult("Remark tidak boleh kosong", new List<string> { "Remark" });
-            }
+            //if (string.IsNullOrEmpty(Remark))
+            //{
+            //    yield return new ValidationResult("Remark tidak boleh kosong", new List<string> { "Remark" });
+            //}
 
             #endregion
         }

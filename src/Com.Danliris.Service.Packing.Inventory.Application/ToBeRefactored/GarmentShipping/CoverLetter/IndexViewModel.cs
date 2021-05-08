@@ -15,7 +15,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public string address { get; set; }
         public string attn { get; set; }
         public string phone { get; set; }
+        public string destination { get; set; }
         public DateTimeOffset? bookingDate { get; set; }
+        public double cartoonQuantity { get; set; }
 
         public string orderName { get; set; }
     }

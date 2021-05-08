@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -487,6 +488,44 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Controllers
             var response = await controller.Put(1, dataUtil);
 
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+        }
+
+        [Fact]
+        public void Should_Success_GetPackingAreaNoteExcelAll()
+        {
+            //v
+            var serviceMock = new Mock<IInputPackagingService>();
+            serviceMock.Setup(s => s.GenerateExcelAll(It.IsAny<DateTimeOffset?>(), It.IsAny<DateTimeOffset?>(), It.IsAny<int>()))
+                .Returns(new MemoryStream());
+            var service = serviceMock.Object;
+
+            var identityProviderMock = new Mock<IIdentityProvider>();
+            var identityProvider = identityProviderMock.Object;
+
+            var controller = GetController(service, identityProvider);
+            //controller.ModelState.IsValid == false;
+            var response = controller.GetExcelAll("7");
+
+            Assert.NotNull(response);
+        }
+        [Fact]
+        public void Should_Exception_GetPackingAreaNoteExcelAll()
+        {
+            //v
+            var serviceMock = new Mock<IInputPackagingService>();
+            serviceMock.Setup(s => s.GenerateExcelAll(It.IsAny<DateTimeOffset?>(), It.IsAny<DateTimeOffset?>(), It.IsAny<int>()))
+                .Throws(new Exception());
+            var service = serviceMock.Object;
+
+            var identityProviderMock = new Mock<IIdentityProvider>();
+            var identityProvider = identityProviderMock.Object;
+
+            var controller = GetController(service, identityProvider);
+            //controller.ModelState.IsValid == false;
+            var response = controller.GetExcelAll("7");
+
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+
         }
     }
 }

@@ -41,11 +41,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Test
             string testName = GetCurrentMethod();
             var dbContext = DbContext(testName);
 
-            Assert.Empty(dbContext.InventoryDocumentPackingItems);
-            Assert.Empty(dbContext.InventoryDocumentPackings);
-            Assert.Empty(dbContext.InventoryDocumentSKUItems);
-            Assert.Empty(dbContext.InventoryDocumentSKUs);
-            Assert.Empty(dbContext.ProductSKUs);
             Assert.Empty(dbContext.ProductPackings);
             Assert.Empty(dbContext.NewFabricQualityControls);
             Assert.Empty(dbContext.NewFabricGradeTests);
@@ -56,11 +51,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Test
             Assert.Empty(dbContext.DyeingPrintingAreaOutputProductionOrders);
             Assert.Empty(dbContext.DyeingPrintingAreaOutputs);
             Assert.Empty(dbContext.DyeingPrintingAreaSummaries);
-            Assert.Empty(dbContext.PackagingStock);
             //Assert.Empty(dbContext.DyeingPrintingAreaOutputAvalItems);
             Assert.Empty(dbContext.IPCategories);
-            Assert.Empty(dbContext.IPPackings);
-            Assert.Empty(dbContext.IPProducts);
             Assert.Empty(dbContext.IPUnitOfMeasurements);
 
             Assert.Empty(dbContext.GarmentPackingLists);
@@ -80,6 +72,55 @@ namespace Com.Danliris.Service.Packing.Inventory.Test
             Assert.Empty(dbContext.Items);
             Assert.Empty(dbContext.MaterialDeliveryNoteWeaving);
             Assert.Empty(dbContext.ItemsMaterialDeliveryNoteWeaving);
+            Assert.Empty(dbContext.IPWeftTypes);
+            Assert.Empty(dbContext.IPWarpTypes);
+            Assert.Empty(dbContext.IPMaterialConstructions);
+            Assert.Empty(dbContext.IPGrades);
+            Assert.Empty(dbContext.IPWovenType);
+            Assert.Empty(dbContext.IPYarnType);
+            Assert.Empty(dbContext.IPProcessType);
+            Assert.Empty(dbContext.IPWidthType);
+
+            Assert.Empty(dbContext.GarmentShippingLetterOfCredits);
+            Assert.Empty(dbContext.GarmentShippingNotes);
+            Assert.Empty(dbContext.GarmentShippingNoteItems);
+
+            Assert.Empty(dbContext.GarmentShippingAmendLetterOfCredits);
+            Assert.Empty(dbContext.GarmentShippingExportSalesDOs);
+            Assert.Empty(dbContext.GarmentShippingExportSalesDOItems);
+            Assert.Empty(dbContext.GarmentShippingLocalSalesNotes);
+            Assert.Empty(dbContext.GarmentShippingLocalSalesNoteItems);
+
+            Assert.Empty(dbContext.GarmentShippingLocalCoverLetters);
+            Assert.Empty(dbContext.GarmentShippingLocalSalesDOs);
+            Assert.Empty(dbContext.GarmentShippingLocalSalesDOItems);
+
+            Assert.Empty(dbContext.GarmentShippingLocalPriceCorrectionNotes);
+            Assert.Empty(dbContext.GarmentShippingLocalPriceCorrectionNoteItems);
+
+            Assert.Empty(dbContext.GarmentShippingLocalReturnNotes);
+            Assert.Empty(dbContext.GarmentShippingLocalReturnNoteItems);
+
+            Assert.Empty(dbContext.GarmentShippingLocalPriceCuttingNotes);
+            Assert.Empty(dbContext.GarmentShippingLocalPriceCuttingNoteItems);
+
+            Assert.Empty(dbContext.GarmentShippingLocalSalesContracts);
+            Assert.Empty(dbContext.GarmentShippingLocalSalesContractItems);
+
+            Assert.Empty(dbContext.GarmentShippingInsuranceDispositions);
+            Assert.Empty(dbContext.GarmentShippingInsuranceDispositionItems);
+
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositions);
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositionBillDetails);
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositionInvoiceDetails);
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositionUnitCharges);
+
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositionRecaps);
+            Assert.Empty(dbContext.GarmentShippingPaymentDispositionRecapItems);
+
+            Assert.Empty(dbContext.GarmentShippingCostStructures);
+            Assert.Empty(dbContext.GarmentShippingCostStructureItems);
+            Assert.Empty(dbContext.GarmentShippingCostStructureDetails);
         }
     }
 }

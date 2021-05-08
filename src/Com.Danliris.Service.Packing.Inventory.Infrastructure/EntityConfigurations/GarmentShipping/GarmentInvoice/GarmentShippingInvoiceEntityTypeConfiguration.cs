@@ -122,16 +122,31 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
 
 			configuration
 				.Property(shippingInvoice => shippingInvoice.Description)
-				.HasMaxLength(255);
+				.HasColumnType("text");
 
 			configuration
+                .Property(shippingInvoice => shippingInvoice.ConsigneeAddress)
+                .HasMaxLength(4000);
+
+
+            configuration
+                .Property(shippingInvoice => shippingInvoice.DeliverTo)
+                .HasMaxLength(1500);
+
+            configuration
 				.HasMany(shippingInvoice => shippingInvoice.Items)
 				.WithOne()
-				.HasForeignKey("GarmentShippingInvoiceId");
+				.HasForeignKey(s => s.GarmentShippingInvoiceId)
+                .OnDelete(DeleteBehavior.Restrict);
 			configuration
 			   .HasMany(shippingInvoice => shippingInvoice.GarmentShippingInvoiceAdjustment)
 			   .WithOne()
 			   .HasForeignKey(s =>s.GarmentShippingInvoiceId);
-		}
+
+            configuration
+               .HasMany(shippingInvoice => shippingInvoice.GarmentShippingInvoiceUnit)
+               .WithOne()
+               .HasForeignKey(s => s.GarmentShippingInvoiceId);
+        }
 	}
 }

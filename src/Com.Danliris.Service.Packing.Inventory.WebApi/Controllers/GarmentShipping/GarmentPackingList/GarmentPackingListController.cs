@@ -1,5 +1,6 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentPackingList;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
+using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentPackingList;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.IdentityProvider;
 using Com.Danliris.Service.Packing.Inventory.WebApi.Helper;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
                 _validateService.Validate(viewModel);
                 var result = await _service.Create(viewModel);
 
-                return Created("/", result);
+                return Created("/", new { data = result });
             }
             catch (ServiceValidationException ex)
             {
@@ -70,6 +71,22 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         {
             try
             {
+                var accept = Request.Headers["Accept"];
+                if (accept == "application/pdf")
+                {
+                    VerifyUser();
+                    var result = await _service.ReadPdfById(id);
+
+                    return File(result.Data.ToArray(), "application/pdf", result.FileName);
+                }
+                else if (accept == "application/xls")
+                {
+                    VerifyUser();
+                    var result = await _service.ReadExcelById(id);
+
+                    return File(result.Data.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.FileName);
+                }
+
                 var data = await _service.ReadById(id);
 
                 return Ok(new
@@ -83,36 +100,80 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
             }
         }
 
-		[HttpGet("not-used")]
-		public IActionResult GetNotUsed([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery]string order = "{}", [FromQuery] string filter = "{}")
-		{
-			try
-			{
-				var data = _service.ReadNotUsed(page, size, filter, order, keyword);
+        [HttpGet("{id}/order-no")]
+        public async Task<IActionResult> GetByOrderNo([FromRoute] int id)
+        {
+            try
+            {
+                VerifyUser();
+                var result = await _service.ReadPdfByOrderNo(id);
 
-				var info = new Dictionary<string, object>
-					{
-						{ "count", data.Data.Count },
-						{ "total", data.Total },
-						{ "order", order },
-						{ "page", page },
-						{ "size", size }
-					};
+                return File(result.Data.ToArray(), "application/pdf", result.FileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
-				return Ok(new
-				{
-					data = data.Data,
-					info
-				});
-			}
-			catch (Exception ex)
-			{
-				return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-			}
-		}
+        [HttpGet("not-used")]
+        public IActionResult GetNotUsed([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}", [FromQuery] string filter = "{}")
+        {
+            try
+            {
+                var data = _service.ReadNotUsed(page, size, filter, order, keyword);
 
-		[HttpGet]
-        public IActionResult Get([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery]string order = "{}", [FromQuery] string filter = "{}")
+                var info = new Dictionary<string, object>
+                    {
+                        { "count", data.Data.Count },
+                        { "total", data.Total },
+                        { "order", order },
+                        { "page", page },
+                        { "size", size }
+                    };
+
+                return Ok(new
+                {
+                    data = data.Data,
+                    info
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("not-used-cost-structure")]
+        public IActionResult GetNotUsedCostStructure([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}", [FromQuery] string filter = "{}")
+        {
+            try
+            {
+                var data = _service.ReadNotUsedCostStructure(page, size, filter, order, keyword);
+
+                var info = new Dictionary<string, object>
+                    {
+                        { "count", data.Data.Count },
+                        { "total", data.Total },
+                        { "order", order },
+                        { "page", page },
+                        { "size", size }
+                    };
+
+                return Ok(new
+                {
+                    data = data.Data,
+                    info
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Get([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}", [FromQuery] string filter = "{}")
         {
             try
             {
@@ -178,6 +239,284 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
                 var result = await _service.Delete(id);
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("post")]
+        public async Task<IActionResult> SetPost([FromBody] List<int> ids)
+        {
+            try
+            {
+                VerifyUser();
+                await _service.SetPost(ids);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("unpost/{id}")]
+        public async Task<IActionResult> SetUnpost([FromRoute] int id)
+        {
+            try
+            {
+                VerifyUser();
+                await _service.SetUnpost(id);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> SetCancel([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.CANCELED, reason);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("reject-md/{id}")]
+        public async Task<IActionResult> SetRejectMd([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.REJECTED_MD, reason);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("approve-md/{id}")]
+        public async Task<IActionResult> ApproveMd([FromRoute] int id, [FromBody] GarmentPackingListMerchandiserViewModel viewModel)
+        {
+            try
+            {
+                VerifyUser();
+                _validateService.Validate(viewModel);
+                await _service.SetApproveMd(id, viewModel);
+
+                return Ok();
+            }
+            catch (ServiceValidationException ex)
+            {
+                var Result = new
+                {
+                    error = ResultFormatter.Fail(ex),
+                    apiVersion = "1.0.0",
+                    statusCode = HttpStatusCode.BadRequest,
+                    message = "Data does not pass validation"
+                };
+
+                return new BadRequestObjectResult(Result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("revise-md/{id}")]
+        public async Task<IActionResult> SetRevisedMd([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.REVISED_MD, reason);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("approve-shipping/{id}")]
+        public async Task<IActionResult> ApproveShipping([FromRoute] int id, [FromBody] GarmentPackingListShippingViewModel viewModel)
+        {
+            try
+            {
+                VerifyUser();
+                _validateService.Validate(viewModel);
+                await _service.SetApproveShipping(id, viewModel);
+
+                return Ok();
+            }
+            catch (ServiceValidationException ex)
+            {
+                var Result = new
+                {
+                    error = ResultFormatter.Fail(ex),
+                    apiVersion = "1.0.0",
+                    statusCode = HttpStatusCode.BadRequest,
+                    message = "Data does not pass validation"
+                };
+
+                return new BadRequestObjectResult(Result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("reject-shipping-unit/{id}")]
+        public async Task<IActionResult> SetRejectShippingToUnit([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.REJECTED_SHIPPING_UNIT, reason);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("reject-shipping-md/{id}")]
+        public async Task<IActionResult> SetRejectShippingToMd([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.REJECTED_SHIPPING_MD, reason);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPut("revise-shipping/{id}")]
+        public async Task<IActionResult> SetRevisedShipping([FromRoute] int id, [FromBody] string reason)
+        {
+            try
+            {
+                VerifyUser();
+
+                if (string.IsNullOrWhiteSpace(reason) || string.IsNullOrEmpty(reason))
+                {
+                    var Result = new
+                    {
+                        error = "Alasan harus diisi.",
+                        apiVersion = "1.0.0",
+                        statusCode = HttpStatusCode.BadRequest,
+                        message = "Data does not pass validation"
+                    };
+
+                    return new BadRequestObjectResult(Result);
+                }
+
+                await _service.SetStatus(id, GarmentPackingListStatusEnum.REVISED_SHIPPING, reason);
+
+                return Ok();
             }
             catch (Exception ex)
             {

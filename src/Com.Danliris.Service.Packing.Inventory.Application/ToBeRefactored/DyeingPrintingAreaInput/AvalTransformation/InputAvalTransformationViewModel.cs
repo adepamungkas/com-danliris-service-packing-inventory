@@ -37,12 +37,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
             }
             else
             {
-                if (!(Date >= DateTimeOffset.UtcNow || ((DateTimeOffset.UtcNow - Date).TotalDays <= 1 && (DateTimeOffset.UtcNow - Date).TotalDays >= 0)))
+                if (Id == 0 && !(Date >= DateTimeOffset.UtcNow || ((DateTimeOffset.UtcNow - Date).TotalDays <= 1 && (DateTimeOffset.UtcNow - Date).TotalDays >= 0)))
                 {
                     yield return new ValidationResult("Tanggal Harus Lebih Besar atau Sama Dengan Hari Ini", new List<string> { "Date" });
                 }
             }
 
+            if(TotalQuantity <= 0)
+            {
+                yield return new ValidationResult("Qty Satuan harus diisi", new List<string>() { "TotalQuantity" });
+            }
+
+            if (TotalWeight <= 0)
+            {
+                yield return new ValidationResult("Qty Berat harus diisi", new List<string>() { "TotalWeight" });
+            }
 
             if (string.IsNullOrEmpty(Shift))
                 yield return new ValidationResult("Shift harus diisi", new List<string> { "Shift" });
@@ -53,44 +62,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
             if (string.IsNullOrEmpty(AvalType))
                 yield return new ValidationResult("Macam Barang harus diisi", new List<string> { "AvalType" });
 
-            int Count = 0;
-            string DetailErrors = "[";
-
             if ((Id == 0 && AvalTransformationProductionOrders.Where(s => s.IsSave).Count() == 0) || (Id != 0 && AvalTransformationProductionOrders.Count() == 0))
             {
                 yield return new ValidationResult("SPP harus Diisi", new List<string> { "AvalTransformationProductionOrder" });
             }
-            else
-            {
-                foreach (var item in AvalTransformationProductionOrders)
-                {
-                    DetailErrors += "{";
 
-                    if (item.IsSave)
-                    {
-                        if (item.AvalQuantity == 0)
-                        {
-                            Count++;
-                            DetailErrors += "AvalQuantity: 'Qty Satuan Harus Lebih dari 0!',";
-                        }
-
-                        if (item.WeightQuantity == 0)
-                        {
-                            Count++;
-                            DetailErrors += "WeightQuantity: 'Qty Berat Harus Lebih dari 0!',";
-                        }
-
-                    }
-
-
-                    DetailErrors += "}, ";
-                }
-            }
-
-            DetailErrors += "]";
-
-            if (Count > 0)
-                yield return new ValidationResult(DetailErrors, new List<string> { "AvalTransformationProductionOrders" });
         }
     }
 }

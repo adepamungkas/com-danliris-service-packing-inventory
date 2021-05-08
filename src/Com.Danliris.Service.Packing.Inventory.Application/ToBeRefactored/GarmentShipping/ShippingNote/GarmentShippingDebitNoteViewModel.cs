@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +8,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 {
     public class GarmentShippingDebitNoteViewModel : GarmentShippingNoteViewModel, IValidatableObject
     {
+        public BankAccount bank { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (date == null || date == DateTimeOffset.MinValue)
@@ -19,9 +22,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Buyer tidak boleh kosong", new List<string> { "buyer" });
             }
 
+            if (bank == null || bank.id == 0)
+            {
+                yield return new ValidationResult("Bank tidak boleh kosong", new List<string> { "bank" });
+            }
+
             if (items == null || items.Count == 0)
             {
-                yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "items" });
+                yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "itemsCount" });
             }
             else
             {
@@ -38,11 +46,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                         errorItemsCount++;
                     }
 
-                    if (item.currency == null || item.currency.Id == 0)
-                    {
-                        errorItem["currency"] = "Currency tidak boleh kosong";
-                        errorItemsCount++;
-                    }
+                    //if (item.currency == null || item.currency.Id == 0)
+                    //{
+                    //    errorItem["currency"] = "Currency tidak boleh kosong";
+                    //    errorItemsCount++;
+                    //}
 
                     if (item.amount <= 0)
                     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.DyeingPrintingAreaOutput.Warehouse;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.IdentityProvider;
 using Com.Danliris.Service.Packing.Inventory.WebApi.Helper;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,13 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
     {
         private readonly IOutputWarehouseService _service;
         private readonly IIdentityProvider _identityProvider;
+        private readonly IValidateService ValidateService;
 
-        public OutputWarehouseController(IOutputWarehouseService service, IIdentityProvider identityProvider)
+        public OutputWarehouseController(IOutputWarehouseService service, IIdentityProvider identityProvider, IValidateService validateService)
         {
             _service = service;
             _identityProvider = identityProvider;
+            ValidateService = validateService;
         }
 
         protected void VerifyUser()
@@ -46,9 +49,22 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             try
             {
                 VerifyUser();
+                ValidateService.Validate(viewModel);
                 var result = await _service.Create(viewModel);
 
                 return Created("/", result);
+            }
+            catch (ServiceValidationException ex)
+            {
+                var Result = new
+                {
+                    error = ResultFormatter.Fail(ex),
+                    apiVersion = "1.0.0",
+                    statusCode = HttpStatusCode.BadRequest,
+                    message = "Data does not pass validation"
+                };
+
+                return new BadRequestObjectResult(Result);
             }
             catch (Exception ex)
             {
@@ -79,7 +95,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
         {
             try
             {
-
+                VerifyUser();
                 var data = await _service.Delete(id);
                 return Ok(new
                 {
@@ -145,12 +161,31 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
         }
 
         [HttpGet("input-production-orders-v2")]
-        public IActionResult GetProductionOrdersv2()
+        public IActionResult NewGetProductionOrdersv2([FromQuery] long productionOrderId = 0)
         {
             try
             {
 
-                var data = _service.GetInputSppWarehouseItemList();
+                var data = _service.GetInputSppWarehouseItemListV2(productionOrderId);
+                return Ok(new
+                {
+                    data
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+        [HttpGet("input-production-orders-v2/by-packing-code/{packingCode}")]
+        public IActionResult NewGetProductionOrdersv2ByPackingCode(string packingCode)
+        {
+            try
+            {
+
+                var data = _service.GetInputSppWarehouseItemListV2(packingCode);
                 return Ok(new
                 {
                     data
@@ -182,12 +217,12 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             }
         }
         [HttpGet("output-production-orders/{bonId}")]
-        public IActionResult GetOutputProductionOrdersv2(int bonId)
+        public async Task<IActionResult> GetOutputProductionOrdersv2(int bonId)
         {
             try
             {
 
-                var data = _service.GetOutputSppWarehouseItemList(bonId);
+                var data = await _service.GetOutputSppWarehouseItemListAsync(bonId);
                 return Ok(new
                 {
                     data
@@ -207,7 +242,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
                 VerifyUser();
                 byte[] xlsInBytes;
                 int clientTimeZoneOffset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-                var Result = await _service.GenerateExcel(id);
+                var Result = await _service.GenerateExcel(id, clientTimeZoneOffset);
                 string filename = "Bon Keluar Gudang Jadi Dyeing/Printing.xlsx";
                 xlsInBytes = Result.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
@@ -216,6 +251,103 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             catch (Exception ex)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        [HttpGet("xls")]
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, [FromQuery] DateTimeOffset? dateFrom = null, [FromQuery] DateTimeOffset? dateTo = null)
+        {
+            try
+            {
+                VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = _service.GenerateExcelAll(dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Pencatatan Keluar Gudang Jadi Dyeing/Printing.xlsx";
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("adj-production-order-loader")]
+        public IActionResult GetAdjProductionOrder([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
+           [FromQuery] string filter = "{}")
+        {
+            try
+            {
+
+                var data = _service.GetDistinctAllProductionOrder(page, size, filter, order, keyword);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] OutputWarehouseViewModel viewModel)
+        {
+            VerifyUser();
+            if (!ModelState.IsValid)
+            {
+                var exception = new
+                {
+                    error = ResultFormatter.FormatErrorMessage(ModelState)
+                };
+                return new BadRequestObjectResult(exception);
+            }
+
+            try
+            {
+                VerifyUser();
+                ValidateService.Validate(viewModel);
+                await _service.Update(id, viewModel);
+
+                return NoContent();
+            }
+            catch (ServiceValidationException ex)
+            {
+                var Result = new
+                {
+                    error = ResultFormatter.Fail(ex),
+                    apiVersion = "1.0.0",
+                    statusCode = HttpStatusCode.BadRequest,
+                    message = "Data does not pass validation"
+                };
+
+                return new BadRequestObjectResult(Result);
+            }
+            catch (Exception ex)
+            {
+                var error = new
+                {
+                    statusCode = HttpStatusCode.InternalServerError,
+                    error = ex.Message
+                };
+                return StatusCode((int)HttpStatusCode.InternalServerError, error);
+            }
+        }
+
+        [HttpGet("production-order-loader")]
+        public IActionResult GetDistinctProductionOrder([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
+            [FromQuery] string filter = "{}")
+        {
+            try
+            {
+
+                var data = _service.GetDistinctProductionOrder(page, size, filter, order, keyword);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
             }
         }
     }

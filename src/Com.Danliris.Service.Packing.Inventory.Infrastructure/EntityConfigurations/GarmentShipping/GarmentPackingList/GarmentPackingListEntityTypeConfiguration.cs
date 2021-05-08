@@ -42,6 +42,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
                 .HasMaxLength(100);
 
             builder
+                .Property(s => s.PaymentTerm)
+                .HasMaxLength(25);
+
+            builder
                 .Property(s => s.LCNo)
                 .HasMaxLength(100);
 
@@ -62,6 +66,30 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
                 .HasMaxLength(50);
 
             builder
+                .Property(s => s.FinalDestination)
+                .HasMaxLength(50);
+
+            builder
+                .Property(s => s.FabricCountryOrigin)
+                .HasMaxLength(255);
+
+            builder
+                .Property(s => s.FabricComposition)
+                .HasMaxLength(255);
+
+            builder
+                .Property(s => s.RemarkMd)
+                .HasMaxLength(2000);
+
+            builder
+                .Property(s => s.SayUnit)
+                .HasMaxLength(50);
+
+            builder
+                .Property(s => s.OtherCommodity)
+                .HasMaxLength(2000);
+
+            builder
                 .Property(s => s.ShippingMark)
                 .HasMaxLength(2000);
 
@@ -74,6 +102,23 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
                 .HasMaxLength(2000);
 
             builder
+                .Property(s => s.ShippingMarkImagePath)
+                .HasMaxLength(500);
+
+            builder
+                .Property(s => s.SideMarkImagePath)
+                .HasMaxLength(500);
+
+            builder
+                .Property(s => s.RemarkImagePath)
+                .HasMaxLength(500);
+
+            builder
+                .Property(s => s.Status)
+                .HasMaxLength(50)
+                .HasConversion<string>();
+
+            builder
                 .HasMany(h => h.Items)
                 .WithOne()
                 .HasForeignKey(f => f.PackingListId);
@@ -82,6 +127,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
                 .HasMany(h => h.Measurements)
                 .WithOne()
                 .HasForeignKey(f => f.PackingListId);
+
+            builder
+                .Property(s => s.ShippingStaffName)
+                .HasMaxLength(255);
+
+            builder
+                .HasMany(h => h.StatusActivities)
+                .WithOne()
+                .HasForeignKey(f => f.PackingListId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Property(d => d.Description)
+                .HasMaxLength(1000);
+
         }
     }
 }

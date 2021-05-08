@@ -1,5 +1,6 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.CommonViewModelObjectProperties;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentShippingInvoice;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentPackingList;
@@ -16,12 +17,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 	public class GarmentShippingInvoiceService : IGarmentShippingInvoiceService
 	{
 		private readonly IGarmentShippingInvoiceRepository _repository;
-		private readonly IGarmentPackingListRepository _packingListrepository;
+        private readonly IServiceProvider serviceProvider;
 
-		public GarmentShippingInvoiceService(IServiceProvider serviceProvider)
+        public GarmentShippingInvoiceService(IServiceProvider serviceProvider)
 		{
 			_repository = serviceProvider.GetService<IGarmentShippingInvoiceRepository>();
-		}
+
+            this.serviceProvider = serviceProvider;
+
+        }
 		private GarmentShippingInvoiceViewModel MapToViewModel(GarmentShippingInvoiceModel model)
 		{
 			var vm = new GarmentShippingInvoiceViewModel()
@@ -79,17 +83,22 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 				COTP = model.COTP,
 				COTPDate = model.COTPDate,
 				Description = model.Description,
+				Remark = model.Remark,
 				AmountToBePaid = model.AmountToBePaid,
 				CPrice = model.CPrice,
 				Memo = model.Memo,
 				TotalAmount = model.TotalAmount,
+				IsUsed = model.IsUsed,
+                ConsigneeAddress=model.ConsigneeAddress,
+                DeliverTo=model.DeliverTo,
 				GarmentShippingInvoiceAdjustments = model.GarmentShippingInvoiceAdjustment.Select(i=> new GarmentShippingInvoiceAdjustmentViewModel
 				{
 					AdjustmentDescription = i.AdjustmentDescription,
 					AdjustmentValue = i.AdjustmentValue,
 					Id = i.Id,
-					GarmentShippingInvoiceId = i.GarmentShippingInvoiceId
-				}).ToList(),
+					GarmentShippingInvoiceId = i.GarmentShippingInvoiceId,
+                    AdditionalChargesId = i.AdditionalChargesId
+                }).ToList(),
 				Items = model.Items.Select(i => new GarmentShippingInvoiceItemViewModel
 				{
 					Active = i.Active,
@@ -119,6 +128,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 						Name = i.ComodityName
 					},
 					ComodityDesc = i.ComodityDesc,
+                    Desc2=i.Desc2,
+                    Desc3=i.Desc3,
+                    Desc4=i.Desc4,
 					Uom = new UnitOfMeasurement
 					{
 						Id= i.UomId,
@@ -134,10 +146,24 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 					{
 						Id = i.UnitId,
 						Code = i.UnitCode
-					}
+					},
+					PackingListItemId = i.PackingListItemId
 				}).ToList(),
+				GarmentShippingInvoiceUnits= model.GarmentShippingInvoiceUnit.Select(i => new GarmentShippingInvoiceUnitViewModel
+                {
+                    Unit = new Unit
+                    {
+                        Id = i.UnitId,
+                        Code = i.UnitCode
+                    },
+                    Id = i.Id,
+                    GarmentShippingInvoiceId = i.GarmentShippingInvoiceId,
+                    AmountPercentage=i.AmountPercentage,
+                    QuantityPercentage=i.QuantityPercentage
 
-			};
+                }).ToList(),
+
+            };
 			return vm;
 		}
 		private GarmentShippingInvoiceModel MapToModel(GarmentShippingInvoiceViewModel viewModel)
@@ -149,7 +175,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 				i.Uom = i.Uom ?? new UnitOfMeasurement();
 				i.Unit = i.Unit ?? new Unit();
 				i.Comodity = i.Comodity ?? new Comodity();
-				return new GarmentShippingInvoiceItemModel( i.RONo, i.SCNo, i.BuyerBrand.Id, i.BuyerBrand.Name, i.Quantity, i.Comodity.Id, i.Comodity.Code, i.Comodity.Name, i.ComodityDesc, i.Uom.Id.GetValueOrDefault(), i.Uom.Unit, i.Price, i.PriceRO, i.Amount, i.CurrencyCode, i.Unit.Id, i.Unit.Code, i.CMTPrice) {
+				return new GarmentShippingInvoiceItemModel( i.RONo, i.SCNo, i.BuyerBrand.Id, i.BuyerBrand.Name, i.Quantity, i.Comodity.Id, i.Comodity.Code, i.Comodity.Name, i.ComodityDesc,i.Desc2,i.Desc3, i.Desc4, i.Uom.Id.GetValueOrDefault(), i.Uom.Unit, i.Price, i.PriceRO, i.Amount, i.CurrencyCode, i.Unit.Id, i.Unit.Code, i.CMTPrice, i.PackingListItemId) {
 					Id = i.Id
 				};
 
@@ -158,9 +184,17 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 			
 			viewModel.Section = viewModel.Section ?? new Section();
 			viewModel.BuyerAgent = viewModel.BuyerAgent ?? new BuyerAgent();
-			var garmentshippinginvoiceadjustment = (viewModel.GarmentShippingInvoiceAdjustments ?? new List<GarmentShippingInvoiceAdjustmentViewModel>()).Select(m => new GarmentShippingInvoiceAdjustmentModel(m.GarmentShippingInvoiceId, m.AdjustmentDescription, m.AdjustmentValue) { Id = m.Id }).ToList();
+			var garmentshippinginvoiceadjustment = (viewModel.GarmentShippingInvoiceAdjustments ?? new List<GarmentShippingInvoiceAdjustmentViewModel>()).Select(m => new GarmentShippingInvoiceAdjustmentModel(m.GarmentShippingInvoiceId, m.AdjustmentDescription, m.AdjustmentValue, m.AdditionalChargesId) { Id = m.Id }).ToList();
+            var garmentshippinginvoiceUnit = (viewModel.GarmentShippingInvoiceUnits ?? new List<GarmentShippingInvoiceUnitViewModel>()).Select(m => {
 
-			GarmentShippingInvoiceModel garmentShippingInvoiceModel = new GarmentShippingInvoiceModel(viewModel.PackingListId,viewModel.InvoiceNo, viewModel.InvoiceDate,viewModel.From,viewModel.To,viewModel.BuyerAgent.Id,viewModel.BuyerAgent.Code,viewModel.BuyerAgent.Name,viewModel.Consignee,viewModel.LCNo,viewModel.IssuedBy,viewModel.Section.Id,viewModel.Section.Code,viewModel.ShippingPer,viewModel.SailingDate,viewModel.ConfirmationOfOrderNo,viewModel.ShippingStaffId,viewModel.ShippingStaff,viewModel.FabricTypeId,viewModel.FabricType,viewModel.BankAccountId,viewModel.BankAccount,viewModel.PaymentDue,viewModel.PEBNo,viewModel.PEBDate.GetValueOrDefault(),viewModel.NPENo,viewModel.NPEDate.GetValueOrDefault(),viewModel.Description,items,viewModel.AmountToBePaid,viewModel.CPrice,viewModel.Say,viewModel.Memo,viewModel.IsUsed,viewModel.BL,viewModel.BLDate.GetValueOrDefault(),viewModel.CO,viewModel.CODate.GetValueOrDefault(),viewModel.COTP,viewModel.COTPDate.GetValueOrDefault(), garmentshippinginvoiceadjustment,viewModel.TotalAmount);
+                m.Unit = m.Unit ?? new Unit();
+                return new GarmentShippingInvoiceUnitModel(m.Unit.Id,m.Unit.Code, m.AmountPercentage,m.QuantityPercentage)
+                {
+                    Id = m.Id
+                };
+            }).ToList();
+
+            GarmentShippingInvoiceModel garmentShippingInvoiceModel = new GarmentShippingInvoiceModel(viewModel.PackingListId,viewModel.InvoiceNo, viewModel.InvoiceDate,viewModel.From,viewModel.To,viewModel.BuyerAgent.Id,viewModel.BuyerAgent.Code,viewModel.BuyerAgent.Name,viewModel.Consignee,viewModel.LCNo,viewModel.IssuedBy,viewModel.Section.Id,viewModel.Section.Code,viewModel.ShippingPer,viewModel.SailingDate,viewModel.ConfirmationOfOrderNo,viewModel.ShippingStaffId,viewModel.ShippingStaff,viewModel.FabricTypeId,viewModel.FabricType,viewModel.BankAccountId,viewModel.BankAccount,viewModel.PaymentDue,viewModel.PEBNo,viewModel.PEBDate.GetValueOrDefault(),viewModel.NPENo,viewModel.NPEDate.GetValueOrDefault(),viewModel.Description,viewModel.Remark,items,viewModel.AmountToBePaid,viewModel.CPrice,viewModel.Say,viewModel.Memo,viewModel.IsUsed,viewModel.BL,viewModel.BLDate.GetValueOrDefault(),viewModel.CO,viewModel.CODate.GetValueOrDefault(),viewModel.COTP,viewModel.COTPDate.GetValueOrDefault(), garmentshippinginvoiceadjustment,viewModel.TotalAmount,viewModel.ConsigneeAddress, viewModel.DeliverTo, garmentshippinginvoiceUnit);
 			 
 			return garmentShippingInvoiceModel;
 		}
@@ -218,5 +252,43 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		{
 			return await _repository.DeleteAsync(id);
 		}
-	}
+
+        public Buyer GetBuyer(int id)
+        {
+            string buyerUri = "master/garment-buyers";
+            IHttpClientService httpClient = (IHttpClientService)serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = httpClient.GetAsync($"{ApplicationSetting.CoreEndpoint}{buyerUri}/{id}").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                Buyer viewModel = JsonConvert.DeserializeObject<Buyer>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public BankAccount GetBank(int id)
+        {
+            string bankUri = "master/account-banks";
+            IHttpClientService httpClient = (IHttpClientService)serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = httpClient.GetAsync($"{ApplicationSetting.CoreEndpoint}{bankUri}/{id}").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                BankAccount viewModel = JsonConvert.DeserializeObject<BankAccount>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 }

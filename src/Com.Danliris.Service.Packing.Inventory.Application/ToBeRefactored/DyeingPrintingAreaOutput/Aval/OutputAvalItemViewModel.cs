@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Application.Utilities;
+using System;
 
 namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.DyeingPrintingAreaOutput.Aval
 {
@@ -10,7 +11,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
         public string AvalUomUnit { get; set; }
         public double AvalQuantity { get; set; }
         public double AvalQuantityKg { get; set; }
-        public string AvalOutSatuan { get; set; }
+        public double AvalOutSatuan { get; set; }
         public double AvalOutQuantity { get; set; }
+        public string DeliveryNote { get; set; }
+        public string AdjDocumentNo { get; set; }
+        public bool HasNextAreaDocument { get; set; }
+
+        public string PrevAval { get; set; }
+
+        public int AvalTransformationId { get; set; }
+        public double AvalQuantityBalance { get; set; }
+        public double AvalWeightBalance { get; set; }
+        public DateTimeOffset DateIn { get; set; }
+        public DateTimeOffset DateOut { get; set; }
     }
 }

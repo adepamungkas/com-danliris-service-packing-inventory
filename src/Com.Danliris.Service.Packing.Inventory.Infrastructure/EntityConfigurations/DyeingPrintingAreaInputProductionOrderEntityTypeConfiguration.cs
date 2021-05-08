@@ -95,6 +95,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
                 .HasMaxLength(128);
 
             builder
+                .Property(s => s.DeliveryOrderReturNo)
+                .HasMaxLength(128);
+
+            builder
                 .Property(s => s.PackagingUnit)
                 .HasMaxLength(128);
 
@@ -117,6 +121,46 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
             builder
               .Property(s => s.InputAvalBonNo)
               .HasMaxLength(64);
+
+            builder
+              .Property(s => s.MaterialName)
+              .HasMaxLength(1024);
+
+            builder
+              .Property(s => s.MaterialConstructionName)
+              .HasMaxLength(1024);
+
+            builder
+              .Property(s => s.MaterialWidth)
+              .HasMaxLength(1024);
+
+            builder
+              .Property(s => s.FinishWidth)
+              .HasMaxLength(1024);
+
+            builder
+             .Property(s => s.Machine)
+             .HasMaxLength(32);
+
+            builder
+            .Property(s => s.ProductionMachine)
+            .HasMaxLength(128);
+
+            builder
+             .Property(s => s.ProductPackingCode)
+             .HasMaxLength(4096);
+
+            builder
+             .Property(s => s.ProductSKUCode)
+             .HasMaxLength(128);
+
+            builder
+             .Property(s => s.ProcessTypeName)
+             .HasMaxLength(1024);
+
+            builder
+             .Property(s => s.YarnMaterialName)
+             .HasMaxLength(1024);
         }
     }
 }

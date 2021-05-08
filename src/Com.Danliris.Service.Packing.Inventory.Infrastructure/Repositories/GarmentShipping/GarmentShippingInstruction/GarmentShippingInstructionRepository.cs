@@ -70,9 +70,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
             modelToUpdate.SetCartonNo(model.CartonNo, _identityProvider.Username, UserAgent);
             modelToUpdate.SetDate(model.Date, _identityProvider.Username, UserAgent);
             modelToUpdate.SetDate(model.Date, _identityProvider.Username, UserAgent);
-            modelToUpdate.SetEMKLCode(model.EMKLCode, _identityProvider.Username, UserAgent);
-            modelToUpdate.SetEMKLId(model.EMKLId, _identityProvider.Username, UserAgent);
-            modelToUpdate.SetEMKLName(model.EMKLName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetForwarderCode(model.ForwarderCode, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetForwarderId(model.ForwarderId, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetForwarderName(model.ForwarderName, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetForwarderAddress(model.ForwarderAddress, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetForwarderPhone(model.ForwarderPhone, _identityProvider.Username, UserAgent);
             modelToUpdate.SetFeederVessel(model.FeederVessel, _identityProvider.Username, UserAgent);
             modelToUpdate.SetFlight(model.Flight, _identityProvider.Username, UserAgent);
             modelToUpdate.SetNotify(model.Notify, _identityProvider.Username, UserAgent);
@@ -80,7 +82,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
             modelToUpdate.SetPlaceOfDelivery(model.PlaceOfDelivery, _identityProvider.Username, UserAgent);
             modelToUpdate.SetPortOfDischarge(model.PortOfDischarge, _identityProvider.Username, UserAgent);
             modelToUpdate.SetShippedBy(model.ShippedBy, _identityProvider.Username, UserAgent);
-
+            modelToUpdate.SetATTN(model.ATTN, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFax(model.Fax, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetCC(model.CC, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetPhone(model.Phone, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetLadingBill(model.LadingBill, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetLadingDate(model.LadingDate, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetFreight(model.Freight, _identityProvider.Username, UserAgent);
+            modelToUpdate.SetMarks(model.Marks, _identityProvider.Username, UserAgent);
             modelToUpdate.SetSpecialInstruction(model.SpecialInstruction, _identityProvider.Username, UserAgent);
             modelToUpdate.SetTransit(model.Transit, _identityProvider.Username, UserAgent);
 

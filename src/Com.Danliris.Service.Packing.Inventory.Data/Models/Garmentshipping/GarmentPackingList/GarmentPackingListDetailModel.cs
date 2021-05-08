@@ -9,10 +9,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 
         public double Carton1 { get; private set; }
         public double Carton2 { get; private set; }
+        public string Style { get; private set; }
         public string Colour { get; private set; }
         public double CartonQuantity { get; private set; }
         public double QuantityPCS { get; private set; }
         public double TotalQuantity { get; private set; }
+
+        public double Length { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
+
+        public double GrossWeight { get; private set; }
+        public double NetWeight { get; private set; }
+        public double NetNetWeight { get; private set; }
+
+        public int Index { get; private set; }
 
         public ICollection<GarmentPackingListDetailSizeModel> Sizes { get; private set; }
 
@@ -21,15 +32,32 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             Sizes = new List<GarmentPackingListDetailSizeModel>();
         }
 
-        public GarmentPackingListDetailModel(double carton1, double carton2, string colour, double cartonQuantity, double quantityPCS, double totalQuantity, ICollection<GarmentPackingListDetailSizeModel> sizes)
+        public GarmentPackingListDetailModel(double carton1, double carton2, string style, string colour, double cartonQuantity, double quantityPCS, double totalQuantity, double length, double width, double height, double grossWeight, double netWeight, double netNetWeight, ICollection<GarmentPackingListDetailSizeModel> sizes, int index)
         {
             Carton1 = carton1;
             Carton2 = carton2;
+            Style = style;
             Colour = colour;
             CartonQuantity = cartonQuantity;
             QuantityPCS = quantityPCS;
             TotalQuantity = totalQuantity;
+            Length = length;
+            Width = width;
+            Height = height;
+            GrossWeight = grossWeight;
+            NetWeight = netWeight;
+            NetNetWeight = netNetWeight;
             Sizes = sizes;
+            Index = index;
+        }
+
+        public void setPackingListItemId(int PackingListItemId, string userName, string userAgent)
+        {
+            if (this.PackingListItemId != PackingListItemId)
+            {
+                this.PackingListItemId = PackingListItemId;
+                this.FlagForUpdate(userName, userAgent);
+            }
         }
 
         public void SetCarton1(double newValue, string userName, string userAgent)
@@ -46,6 +74,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             if (Carton2 != newValue)
             {
                 Carton2 = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetStyle(string newValue, string userName, string userAgent)
+        {
+            if (Style != newValue)
+            {
+                Style = newValue;
                 this.FlagForUpdate(userName, userAgent);
             }
         }
@@ -86,5 +123,67 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             }
         }
 
+        public void SetLength(double newValue, string userName, string userAgent)
+        {
+            if (Length != newValue)
+            {
+                Length = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetWidth(double newValue, string userName, string userAgent)
+        {
+            if (Width != newValue)
+            {
+                Width = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetHeight(double newValue, string userName, string userAgent)
+        {
+            if (Height != newValue)
+            {
+                Height = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetGrossWeight(double newValue, string userName, string userAgent)
+        {
+            if (GrossWeight != newValue)
+            {
+                GrossWeight = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetNetWeight(double newValue, string userName, string userAgent)
+        {
+            if (NetWeight != newValue)
+            {
+                NetWeight = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetNetNetWeight(double newValue, string userName, string userAgent)
+        {
+            if (NetNetWeight != newValue)
+            {
+                NetNetWeight = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetIndex(int newValue, string userName, string userAgent)
+        {
+            if (Index != newValue)
+            {
+                Index = newValue;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
     }
 }

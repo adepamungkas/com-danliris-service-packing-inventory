@@ -14,7 +14,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Controllers.GarmentShippin
         [Fact]
         public async Task Delete_Ok()
         {
-            var dataUtil = ViewModel;
+            var dataUtil = GetViewModel();
 
             var serviceMock = new Mock<IGarmentPackingListService>();
             serviceMock
@@ -23,9 +23,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Controllers.GarmentShippin
             var service = serviceMock.Object;
 
             var validateServiceMock = new Mock<IValidateService>();
-            validateServiceMock
-                .Setup(s => s.Validate(It.IsAny<GarmentPackingListViewModel>()))
-                .Verifiable();
             var validateService = validateServiceMock.Object;
 
             var identityProviderMock = new Mock<IIdentityProvider>();
@@ -41,7 +38,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Controllers.GarmentShippin
         [Fact]
         public async Task Delete_Exception_InternalServerError()
         {
-            var dataUtil = ViewModel;
+            var dataUtil = GetViewModel();
 
             var serviceMock = new Mock<IGarmentPackingListService>();
             serviceMock
@@ -50,9 +47,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Controllers.GarmentShippin
             var service = serviceMock.Object;
 
             var validateServiceMock = new Mock<IValidateService>();
-            validateServiceMock
-                .Setup(s => s.Validate(It.IsAny<GarmentPackingListViewModel>()))
-                .Verifiable();
             var validateService = validateServiceMock.Object;
 
             var identityProviderMock = new Mock<IIdentityProvider>();

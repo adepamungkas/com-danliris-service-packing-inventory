@@ -48,13 +48,14 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             }
             try
             {
+
                 VerifyUser();
                 ValidateService.Validate(viewModel);
                 var result = await _service.Create(viewModel);
 
                 return Created("/", result);
             }
-            catch(ServiceValidationException ex)
+            catch (ServiceValidationException ex)
             {
                 var Result = new
                 {
@@ -108,6 +109,8 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             }
         }
 
+        
+       
 
         [HttpGet("production-orders")]
         public IActionResult GetProductionOrders([FromQuery] string keyword = null, [FromQuery] int page = 1, [FromQuery] int size = 25, [FromQuery] string order = "{}",
@@ -123,6 +126,24 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
 
+            }
+        }
+
+        [HttpGet("monitoring")]
+        public IActionResult GetInputIM(string productionOrderId, string unit, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, 
+            int page = 1, int size = 25, string order = "{}")
+        {
+
+            try
+            {
+                
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                var data = _service.ReadInputIM(productionOrderId, unit, dateFrom, dateTo, page, size, order, offset);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -189,6 +210,27 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.DyeingPrinti
                     error = ex.Message
                 };
                 return StatusCode((int)HttpStatusCode.InternalServerError, error);
+            }
+        }
+
+        [HttpGet("xls")]
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, [FromQuery] DateTimeOffset? dateFrom = null, [FromQuery] DateTimeOffset? dateTo = null)
+        {
+            try
+            {
+                VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = _service.GenerateExcel(dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Penerimaan Area Inspection Material Dyeing/Printing.xlsx";
+
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }

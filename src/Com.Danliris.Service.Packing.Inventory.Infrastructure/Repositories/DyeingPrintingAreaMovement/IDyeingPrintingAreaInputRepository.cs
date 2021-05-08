@@ -1,5 +1,6 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Data;
 using Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaMovement;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
         Task<int> UpdateAvalTransformationArea(int id, DyeingPrintingAreaInputModel model, DyeingPrintingAreaInputModel dbModel);
         IQueryable<DyeingPrintingAreaInputModel> GetDbSet();
         IQueryable<DyeingPrintingAreaInputModel> ReadAllIgnoreQueryFilter();
+        Task<Tuple<int,List<AvalData>>> UpdateAvalTransformationFromOut(string avalType, double avalQuantity, double weightQuantity);
+        Task<int> RestoreAvalTransformation(List<AvalData> avalData);
     }
 }

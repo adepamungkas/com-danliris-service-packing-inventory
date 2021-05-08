@@ -11,6 +11,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
     {
         public DeliveryOrderSales DeliveryOrder { get; set; }
         public ProductionOrder ProductionOrder { get; set; }
+        public Material Material { get; set; }
+        public MaterialConstruction MaterialConstruction { get; set; }
+        public ProcessType ProcessType { get; set; }
+        public YarnMaterial YarnMaterial { get; set; }
+        public string MaterialWidth { get; set; }
+        public string FinishWidth { get; set; }
         public string CartNo { get; set; }
         public string Construction { get; set; }
         public string Unit { get; set; }
@@ -23,6 +29,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
         public string Packing { get; set; }
         public decimal QtyPacking { get; set; }
         public double Qty { get; set; }
+        public double Balance { get; set; }
         public string PackingType { get; set; }
         public string Remark { get; set; }
         public string DeliveryNote { get; set; }
@@ -39,5 +46,23 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
         public string ShippingGrade { get; set; }
         public string ShippingRemark { get; set; }
         public double Weight { get; set; }
+
+        public double PackingLength { get; set; }
+
+        public string AdjDocumentNo { get; set; }
+
+        public double BalanceRemains { get; set; }
+
+        public int ProductSKUId { get; set; }
+        public int FabricSKUId { get; set; }
+        public string ProductSKUCode { get; set; }
+        public bool HasPrintingProductSKU { get; set; }
+        public int ProductPackingId { get; set; }
+        public int FabricPackingId { get; set; }
+        public string ProductPackingCode { get; set; }
+        public bool HasPrintingProductPacking { get; set; }
+        public DateTimeOffset DateIn { get; set; }
+        public DateTimeOffset DateOut { get; set; }
+        public string InventoryType { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Com.Danliris.Service.Packing.Inventory.Data;
 using Com.Danliris.Service.Packing.Inventory.Data.Models.DyeingPrintingAreaMovement;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Dye
         Task<int> UpdateFromOutputAsync(int id, double balance);
         Task<int> UpdateFromOutputIMAsync(int id, double balance, double avalALength, double avalBLength, double avalConnectionLength);
         DyeingPrintingAreaInputProductionOrderModel GetInputProductionOrder(int id);
-        Task<int> UpdateFromNextAreaInputAsync(int id, double balance);
+        Task<int> UpdateFromNextAreaInputAsync(int id, double balance, decimal qtyPacking);
+        Task<int> UpdateBalanceAndRemainsAsync(int id, double balance);
+        Task<int> UpdateBalanceAndRemainsWithFlagAsync(int id, double balance);
+        Task<int> UpdateBalanceAndRemainsWithFlagAsync(int id, double balance, decimal qtyPacking);
+        Task<int> UpdateFromOutputIMAsync(int id, double balance);
+        Task<int> UpdateDateOutsync(int id, DateTimeOffset dateOut);
+        Task<Tuple<int, List<PackingData>>> UpdatePackingFromOut(string destinationArea, string productionOrderNo, string grade, double balance);
+        Task<int> RestorePacking(string destinationArea, List<PackingData> packingData);
+        Task<int> UpdateFromNextAreaInputPackingAsync(List<PackingData> packingData);
     }
 }

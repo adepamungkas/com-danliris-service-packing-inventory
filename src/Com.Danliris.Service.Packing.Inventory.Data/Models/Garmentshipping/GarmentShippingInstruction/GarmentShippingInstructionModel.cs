@@ -10,9 +10,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
         public string InvoiceNo { get; private set; }
         public int InvoiceId { get; private set; }
         public DateTimeOffset Date { get; private set; }
-        public int EMKLId { get; private set; }
-        public string EMKLCode { get; private set; }
-        public string EMKLName { get; private set; }
+        public int ForwarderId { get; private set; }
+        public string ForwarderCode { get; private set; }
+        public string ForwarderName { get; private set; }
+        public string ForwarderAddress { get; private set; }
+        public string ForwarderPhone { get; private set; }
         public string ATTN { get; private set; }
         public string Fax { get; private set; }
         public string CC { get; private set; }
@@ -39,20 +41,30 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
         public string BuyerAgentAddress { get; private set; }
         public string Notify { get; private set; }
         public string SpecialInstruction { get; private set; }
+        public DateTimeOffset LadingDate { get; private set; }
+        public string LadingBill { get; private set; }
+        public string Freight { get; private set; }
+        public string Marks { get; private set; }
         #endregion
-        
 
-        public GarmentShippingInstructionModel(string invoiceNo, int invoiceId, DateTimeOffset date, int emklId, string emklCode, string emklName, string attn, string fax, string cc,int shippingStaffId, string shippingStaffName,string phone, string shippedBy, DateTimeOffset truckingDate, string cartonNo, string portOfDischarge,string placeOfDelivery,string feederVessel, string oceanVessel, string carrier, string flight, string transit, int bankAccountId, string bankAccountName,int buyerAgentId, string buyerAgentCode, string buyerAgentName, string buyerAgentAddress, string notify, string specialInstruction)
+        public GarmentShippingInstructionModel()
+        {
+        }
+
+
+        public GarmentShippingInstructionModel(string invoiceNo, int invoiceId, DateTimeOffset date, int forwarderId, string forwarderCode, string forwarderName, string forwarderAddress, string forwarderPhone, string aTTN, string fax, string cC, int shippingStaffId, string shippingStaffName, string phone, string shippedBy, DateTimeOffset truckingDate, string cartonNo, string portOfDischarge, string placeOfDelivery, string feederVessel, string oceanVessel, string carrier, string flight, string transit, int bankAccountId, string bankAccountName, int buyerAgentId, string buyerAgentCode, string buyerAgentName, string buyerAgentAddress, string notify, string specialInstruction, DateTimeOffset ladingDate, string ladingBill, string freight, string marks)
         {
             InvoiceNo = invoiceNo;
             InvoiceId = invoiceId;
             Date = date;
-            EMKLCode = emklCode;
-            EMKLId = emklId;
-            EMKLName = emklName;
-            ATTN = attn;
+            ForwarderId = forwarderId;
+            ForwarderCode = forwarderCode;
+            ForwarderName = forwarderName;
+            ForwarderAddress = forwarderAddress;
+            ForwarderPhone = forwarderPhone;
+            ATTN = aTTN;
             Fax = fax;
-            CC = cc;
+            CC = cC;
             ShippingStaffId = shippingStaffId;
             ShippingStaffName = shippingStaffName;
             Phone = phone;
@@ -68,16 +80,16 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             Transit = transit;
             BankAccountId = bankAccountId;
             BankAccountName = bankAccountName;
-            BuyerAgentAddress = buyerAgentAddress;
-            BuyerAgentCode = buyerAgentAddress;
-            BuyerAgentName = buyerAgentName;
             BuyerAgentId = buyerAgentId;
+            BuyerAgentCode = buyerAgentCode;
+            BuyerAgentName = buyerAgentName;
+            BuyerAgentAddress = buyerAgentAddress;
             Notify = notify;
             SpecialInstruction = specialInstruction;
-        }
-
-        public GarmentShippingInstructionModel()
-        {
+            LadingDate = ladingDate;
+            LadingBill = ladingBill;
+            Freight = freight;
+            Marks = marks;
         }
 
         public void SetInvoiceId(int invoiceId, string userName, string userAgent)
@@ -98,29 +110,47 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             }
         }
 
-        public void SetEMKLId(int emklId, string userName, string userAgent)
+        public void SetForwarderId(int forwarderId, string userName, string userAgent)
         {
-            if (EMKLId != emklId)
+            if (ForwarderId != forwarderId)
             {
-                EMKLId = emklId;
+                ForwarderId = forwarderId;
                 this.FlagForUpdate(userName, userAgent);
             }
         }
 
-        public void SetEMKLName(string emklName, string userName, string userAgent)
+        public void SetForwarderName(string forwarderName, string userName, string userAgent)
         {
-            if (EMKLName != emklName)
+            if (ForwarderName != forwarderName)
             {
-                EMKLName = emklName;
+                ForwarderName = forwarderName;
                 this.FlagForUpdate(userName, userAgent);
             }
         }
 
-        public void SetEMKLCode(string emklCode, string userName, string userAgent)
+        public void SetForwarderCode(string forwarderCode, string userName, string userAgent)
         {
-            if (EMKLCode != emklCode)
+            if (ForwarderCode != forwarderCode)
             {
-                EMKLCode = emklCode;
+                ForwarderCode = forwarderCode;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetForwarderAddress(string forwarderAddress, string userName, string userAgent)
+        {
+            if (ForwarderAddress != forwarderAddress)
+            {
+                ForwarderAddress = forwarderAddress;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetForwarderPhone(string forwarderPhone, string userName, string userAgent)
+        {
+            if (ForwarderPhone != forwarderPhone)
+            {
+                ForwarderPhone = forwarderPhone;
                 this.FlagForUpdate(userName, userAgent);
             }
         }
@@ -220,6 +250,78 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             if (SpecialInstruction != specialInstruction)
             {
                 SpecialInstruction = specialInstruction;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetFax(string fax, string userName, string userAgent)
+        {
+            if (Fax != fax)
+            {
+                Fax = fax;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetATTN(string attn, string userName, string userAgent)
+        {
+            if (ATTN != attn)
+            {
+                ATTN = attn;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetCC(string cc, string userName, string userAgent)
+        {
+            if (CC != cc)
+            {
+                CC = cc;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetPhone(string phone, string userName, string userAgent)
+        {
+            if (Phone != phone)
+            {
+                Phone = phone;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetLadingDate(DateTimeOffset ladingDate, string userName, string userAgent)
+        {
+            if (LadingDate != ladingDate)
+            {
+                LadingDate = ladingDate;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetLadingBill(string ladingBill, string userName, string userAgent)
+        {
+            if (LadingBill != ladingBill)
+            {
+                LadingBill = ladingBill;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetFreight(string freight, string userName, string userAgent)
+        {
+            if (Freight != freight)
+            {
+                Freight = freight;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetMarks(string marks, string userName, string userAgent)
+        {
+            if (Marks != marks)
+            {
+                Marks = marks;
                 this.FlagForUpdate(userName, userAgent);
             }
         }

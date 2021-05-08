@@ -29,14 +29,40 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
             var serviceProvider = GetServiceProviderMock(dbContext).Object;
             var repo = new GarmentPackingListRepository(dbContext, serviceProvider);
 
-            var oldModel = DataUtil(repo, dbContext).GetModel();
+            var items = new HashSet<GarmentPackingListItemModel> {
+                new GarmentPackingListItemModel("", "", 1, "", 1, "", "", "", 1, 1, "", 1, 1, 1, 1, 1, "", 1, "", "", "", "", "", new HashSet<GarmentPackingListDetailModel> {
+                    new GarmentPackingListDetailModel(1, 1, "", "", 1, 1, 1, 1, 1, 1, 1, 1, 1, new HashSet<GarmentPackingListDetailSizeModel> {
+                        new GarmentPackingListDetailSizeModel(1, "", 1),
+                        new GarmentPackingListDetailSizeModel(1, "", 1)
+                    },1),
+                    new GarmentPackingListDetailModel(1, 1, "", "", 1, 1, 1, 1, 1, 1, 1, 1, 1, new HashSet<GarmentPackingListDetailSizeModel> {
+                        new GarmentPackingListDetailSizeModel(1, "", 1)
+                    },1)
+                }),
+                new GarmentPackingListItemModel("", "", 1, "", 1, "", "", "", 1, 1, "", 1, 1, 1, 1, 1, "", 1, "", "", "", "", "", new HashSet<GarmentPackingListDetailModel> {
+                    new GarmentPackingListDetailModel(1, 1, "", "", 1, 1, 1, 1, 1, 1, 1, 1, 1, new HashSet<GarmentPackingListDetailSizeModel> {
+                        new GarmentPackingListDetailSizeModel(1, "", 1)
+                    },1)
+                })
+            };
+            var measurements = new HashSet<GarmentPackingListMeasurementModel> {
+                new GarmentPackingListMeasurementModel(1, 1, 1, 1),
+                new GarmentPackingListMeasurementModel(1, 1, 1, 1)
+            };
+            var oldModel = new GarmentPackingListModel("", "", "", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", "", "", items, 1, 1, 1, 1, measurements, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "");
+
             await repo.InsertAsync(oldModel);
 
-            var model = repo.ReadAll().FirstOrDefault();
-            var data = await repo.ReadByIdAsync(model.Id);
+            var data = DataUtil(repo, dbContext).CopyModel(oldModel);
+
             data.SetAccounting(!data.Accounting, data.LastModifiedBy, data.LastModifiedAgent);
             data.SetOmzet(!data.Omzet, data.LastModifiedBy, data.LastModifiedAgent);
             data.SetIsUsed(!data.IsUsed, data.LastModifiedBy, data.LastModifiedAgent);
+            data.SetFabricCountryOrigin("Updated " + data.FabricCountryOrigin, data.LastModifiedBy, data.LastModifiedAgent);
+            data.SetFabricComposition("Updated " + data.FabricComposition, data.LastModifiedBy, data.LastModifiedAgent);
+            data.SetRemarkMd("Updated " + data.RemarkMd, data.LastModifiedBy, data.LastModifiedAgent);
+            data.SetPaymentTerm("Updated " + data.PaymentTerm, data.LastModifiedBy, data.LastModifiedAgent);
+            data.SetShippingStaff(data.ShippingStaffId + 1, "Updated" + data.ShippingStaffName, data.LastModifiedBy, data.LastModifiedAgent);
 
             foreach (var item in data.Items)
             {
@@ -53,6 +79,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
                 item.SetUomUnit("Updated " + item.UomUnit, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetPriceRO(1 + item.PriceRO, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetPrice(1 + item.Price, item.LastModifiedBy, item.LastModifiedAgent);
+                item.SetPriceCmt(1 + item.PriceCMT, item.LastModifiedBy, item.LastModifiedAgent);
+                item.SetPriceFob(1 + item.PriceFOB, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetAmount(1 + item.Amount, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetValas("Updated " + item.Valas, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetUnitId(1 + item.UnitId, item.LastModifiedBy, item.LastModifiedAgent);
@@ -60,8 +88,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
                 item.SetArticle("Updated " + item.Article, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetOrderNo("Updated " + item.OrderNo, item.LastModifiedBy, item.LastModifiedAgent);
                 item.SetDescription("Updated " + item.Description, item.LastModifiedBy, item.LastModifiedAgent);
-                item.SetAVG_GW(1 + item.AVG_GW, item.LastModifiedBy, item.LastModifiedAgent);
-                item.SetAVG_NW(1 + item.AVG_NW, item.LastModifiedBy, item.LastModifiedAgent);
+                item.SetDescriptionMd("Updated " + item.DescriptionMd, item.LastModifiedBy, item.LastModifiedAgent);
 
                 foreach (var detail in item.Details)
                 {
@@ -71,13 +98,34 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
                     detail.SetCartonQuantity(1 + detail.CartonQuantity, detail.LastModifiedBy, detail.LastModifiedAgent);
                     detail.SetQuantityPCS(1 + detail.QuantityPCS, detail.LastModifiedBy, detail.LastModifiedAgent);
                     detail.SetTotalQuantity(1 + detail.TotalQuantity, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetLength(1 + detail.Length, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetWidth(1 + detail.Width, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetHeight(1 + detail.Height, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetGrossWeight(1 + detail.GrossWeight, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetNetWeight(1 + detail.NetWeight, detail.LastModifiedBy, detail.LastModifiedAgent);
+                    detail.SetNetNetWeight(1 + detail.NetNetWeight, detail.LastModifiedBy, detail.LastModifiedAgent);
 
                     foreach (var size in detail.Sizes)
                     {
                         size.SetSizeId(1 + size.SizeId, size.LastModifiedBy, size.LastModifiedAgent);
                         size.SetSize(1 + size.Size, size.LastModifiedBy, size.LastModifiedAgent);
                         size.SetQuantity(1 + size.Quantity, size.LastModifiedBy, size.LastModifiedAgent);
+
+                        if (item.Id == 2 || detail.Id == 2 || size.Id == 2)
+                        {
+                            size.Id = 0;
+                        }
                     }
+
+                    if (item.Id == 2 || detail.Id == 2)
+                    {
+                        detail.Id = 0;
+                    }
+                }
+
+                if (item.Id == 2)
+                {
+                    item.Id = 0;
                 }
             }
 
@@ -87,28 +135,50 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Repositories.GarmentShippi
                 measurement.SetWidth(1 + measurement.Width, measurement.LastModifiedBy, measurement.LastModifiedAgent);
                 measurement.SetHeight(1 + measurement.Height, measurement.LastModifiedBy, measurement.LastModifiedAgent);
                 measurement.SetCartonsQuantity(1 + measurement.CartonsQuantity, measurement.LastModifiedBy, measurement.LastModifiedAgent);
+
+                if (measurement.Id == 2)
+                {
+                    measurement.Id = 0;
+                }
             }
 
             var result = await repo.UpdateAsync(data.Id, data);
 
             Assert.NotEqual(0, result);
         }
-		[Fact]
-		public async override Task Should_Success_ReadAll()
-		{
-			string testName = GetCurrentMethod();
-			var dbContext = DbContext(testName);
+        [Fact]
+        public async override Task Should_Success_ReadAll()
+        {
+            string testName = GetCurrentMethod();
+            var dbContext = DbContext(testName);
 
-			var serviceProvider = GetServiceProviderMock(dbContext).Object;
-			GarmentPackingListRepository repoPL = new GarmentPackingListRepository(dbContext, serviceProvider);
-			GarmentPackingListDataUtil utilPL = new GarmentPackingListDataUtil(repoPL);
-			GarmentPackingListModel dataPL = utilPL.GetModel();
-			var dataPackingList = await repoPL.InsertAsync(dataPL);
+            var serviceProvider = GetServiceProviderMock(dbContext).Object;
+            GarmentPackingListRepository repoPL = new GarmentPackingListRepository(dbContext, serviceProvider);
+            GarmentPackingListDataUtil utilPL = new GarmentPackingListDataUtil(repoPL);
+            GarmentPackingListModel dataPL = utilPL.GetModel();
+            var dataPackingList = await repoPL.InsertAsync(dataPL);
 
-			
-			var result = repoPL.ReadNotUsedAsync();
 
-			Assert.NotEmpty(result);
-		}
-	}
+            var result = repoPL.ReadNotUsedAsync();
+
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async Task Should_Success_ReadByNoInvoice()
+        {
+            string testName = GetCurrentMethod();
+            var dbContext = DbContext(testName);
+
+            var serviceProvider = GetServiceProviderMock(dbContext).Object;
+            GarmentPackingListRepository repoPL = new GarmentPackingListRepository(dbContext, serviceProvider);
+            GarmentPackingListDataUtil utilPL = new GarmentPackingListDataUtil(repoPL);
+            GarmentPackingListModel dataPL = utilPL.GetModel();
+            var dataPackingList = await repoPL.InsertAsync(dataPL);
+
+            var result = repoPL.ReadByInvoiceNoAsync(dataPL.InvoiceNo);
+
+            Assert.NotNull(result);
+        }
+    }
 }

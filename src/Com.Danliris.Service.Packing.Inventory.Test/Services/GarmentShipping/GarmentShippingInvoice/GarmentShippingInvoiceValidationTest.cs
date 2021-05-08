@@ -64,14 +64,34 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.G
 					{
 						new GarmentShippingInvoiceAdjustmentViewModel
 						{
-							AdjustmentDescription = "",
+							AdjustmentDescription = "aaa",
 							AdjustmentValue =0
 							 
+						},
+						new GarmentShippingInvoiceAdjustmentViewModel
+						{
+							AdjustmentDescription = "",
+							AdjustmentValue =1
+
 						}
 					},
 					TotalAmount = 0,
 					Say = "",
-					Memo = ""
+					Memo = "",
+                    GarmentShippingInvoiceUnits=new List<GarmentShippingInvoiceUnitViewModel>
+                    {
+                        new GarmentShippingInvoiceUnitViewModel
+                        {
+                            Unit=new Unit
+                            {
+                                Id=1,
+                                Code="asd",
+                                Name="asda"
+                            },
+                            AmountPercentage=12,
+                            QuantityPercentage=11
+                        }
+                    }
 				};
 			}
 		}
@@ -90,6 +110,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.G
 			GarmentShippingInvoiceViewModel viewModel = ViewModel;
 			viewModel.InvoiceDate = DateTimeOffset.Now.AddDays(1);
 			viewModel.Items = new List<GarmentShippingInvoiceItemViewModel>();
+            viewModel.GarmentShippingInvoiceUnits = new List<GarmentShippingInvoiceUnitViewModel>();
 			viewModel.GarmentShippingInvoiceAdjustments = new List<GarmentShippingInvoiceAdjustmentViewModel>();
 
 			var result = viewModel.Validate(null);
@@ -104,8 +125,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.G
 			{
 				new GarmentShippingInvoiceItemViewModel()
 			};
+            viewModel.GarmentShippingInvoiceUnits = new List<GarmentShippingInvoiceUnitViewModel>();
 
-			var result = viewModel.Validate(null);
+            var result = viewModel.Validate(null);
 			Assert.NotEmpty(result.ToList());
 		}
 
@@ -117,6 +139,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.G
 			{
 				new GarmentShippingInvoiceItemViewModel
 				{
+					Price =0,
+					Quantity=0,
+					ComodityDesc=""
 					 
 				}
 			};
@@ -126,15 +151,49 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.G
 		}
 
 		[Fact]
-		public void Validate_MeasurementsDefaultValue()
+		public void Validate_AdjustmentDescriptionValue()
 		{
 			GarmentShippingInvoiceViewModel viewModel = ViewModel;
 			viewModel.GarmentShippingInvoiceAdjustments = new List<GarmentShippingInvoiceAdjustmentViewModel>
 			{
-				new GarmentShippingInvoiceAdjustmentViewModel()
+				new GarmentShippingInvoiceAdjustmentViewModel
+				{
+					AdjustmentDescription = "",
+					AdjustmentValue = 1
+				}
 			};
 
 			var result = viewModel.Validate(null);
+			Assert.NotEmpty(result.ToList());
+		}
+		[Fact]
+		public void Validate_AdjustmentValue()
+		{
+			GarmentShippingInvoiceViewModel viewModel = ViewModel;
+			viewModel.GarmentShippingInvoiceAdjustments = new List<GarmentShippingInvoiceAdjustmentViewModel>
+			{
+				new GarmentShippingInvoiceAdjustmentViewModel
+				{
+					AdjustmentDescription = "adjustment",
+					AdjustmentValue = 0
+				}
+			};
+            viewModel.GarmentShippingInvoiceUnits = new List<GarmentShippingInvoiceUnitViewModel>
+            {
+                new GarmentShippingInvoiceUnitViewModel
+                        {
+                            Unit=new Unit
+                            {
+                                Id=1,
+                                Code="asd",
+                                Name="asda"
+                            },
+                            AmountPercentage=12,
+                            QuantityPercentage=11
+                        }
+            };
+
+            var result = viewModel.Validate(null);
 			Assert.NotEmpty(result.ToList());
 		}
 	}
